@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, MainContent, ProfileHeading, FormGroup, Label, Select } from '../styles/Components';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
+import CartButton from '../components/CartButton';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import { FoodGrid, CityCard, CityName, AddToCartButton } from '../styles/Components';
@@ -46,7 +47,7 @@ const CitySelectionPage: React.FC = () => {
     const city = cities.find(c => c.id === cityId);
     if (city) {
       setSelectedCity(city);
-      navigate('/restaurants');
+      navigate('/restaurant-selection');
     }
   };
 
@@ -89,6 +90,7 @@ const CitySelectionPage: React.FC = () => {
           </FoodGrid>
         </div>
       </MainContent>
+      <CartButton />
     </Container>
   );
 };

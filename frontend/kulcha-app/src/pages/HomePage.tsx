@@ -14,6 +14,7 @@ import Navigation from '../components/Navigation';
 import FoodItem from '../components/FoodItem';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
+import CartButton from '../components/CartButton';
 
 const HomeContainer = styled(PageTransition)`
   min-height: 70vh;
@@ -161,9 +162,9 @@ const HomePage: React.FC = () => {
   
   const handleExploreMenu = () => {
     if (!selectedCity) {
-      navigate('/cities');
+      navigate('/city-selection');
     } else if (!selectedRestaurant) {
-      navigate('/restaurants');
+      navigate('/restaurant-selection');
     }
   };
   
@@ -174,7 +175,7 @@ const HomePage: React.FC = () => {
   const handleStartOver = () => {
     setSelectedCity(null);
     setSelectedRestaurant(null);
-    navigate('/cities');
+    navigate('/city-selection');
   };
   
   return (
@@ -299,6 +300,7 @@ const HomePage: React.FC = () => {
             </>
           )}
         </MainContent>
+        <CartButton />
       </Container>
     </HomeContainer>
   );

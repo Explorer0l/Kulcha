@@ -21,6 +21,7 @@ import {
 } from '../styles/Components';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
+import CartButton from '../components/CartButton';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import styled from 'styled-components';
@@ -389,6 +390,7 @@ const ProfilePage: React.FC = () => {
             </ProfileSection>
           )}
         </MainContent>
+        <CartButton />
       </Container>
     </ProfileContainer>
   );

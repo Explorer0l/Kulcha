@@ -11,6 +11,7 @@ import {
 } from '../styles/Components';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
+import CartButton from '../components/CartButton';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 
@@ -30,6 +31,36 @@ const CartHeading = styled(Heading)`
   
   svg {
     margin-right: var(--spacing-xs);
+  }
+`;
+
+const HeadingActions = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ClearCartButton = styled.button`
+  background-color: transparent;
+  color: #F44336;
+  border: 1px solid #F44336;
+  padding: 8px 12px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-left: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  
+  svg {
+    margin-right: 8px;
+  }
+  
+  &:hover {
+    background-color: #F44336;
+    color: white;
+    transform: translateY(-2px);
   }
 `;
 
@@ -78,8 +109,8 @@ const QuantityContainer = styled.div`
 `;
 
 const QuantityButton = styled.button`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   background-color: var(--primary-color);
   color: white;
   border: none;
@@ -100,14 +131,40 @@ const QuantityButton = styled.button`
 `;
 
 const QuantityText = styled.span`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--card-bg);
   color: var(--text-color);
   font-weight: 600;
+  font-size: 1.1rem;
+`;
+
+const ItemControls = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const RemoveButton = styled.button`
+  background-color: #F44336;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #D32F2F;
+    transform: scale(1.05);
+  }
 `;
 
 const Summary = styled.div`
@@ -170,7 +227,7 @@ const CheckoutButton = styled(Button)`
 `;
 
 const CartPage: React.FC = () => {
-  const { cart, increaseQuantity, decreaseQuantity, removeFromCart } = useAppContext();
+  const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useAppContext();
   const navigate = useNavigate();
   const { showBackButton, hideBackButton, setBackButtonCallback } = useTelegram();
   
@@ -215,7 +272,16 @@ const CartPage: React.FC = () => {
                 Your Cart
               </div>
               {cart.length > 0 && (
-                <span style={{ fontSize: '1.1rem' }}>{cart.length} {cart.length === 1 ? 'item' : 'items'}</span>
+                <HeadingActions>
+                  <span style={{ fontSize: '1.1rem' }}>{cart.length} {cart.length === 1 ? 'item' : 'items'}</span>
+                  <ClearCartButton onClick={clearCart}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Clear Cart
+                  </ClearCartButton>
+                </HeadingActions>
               )}
             </CartHeading>
             
@@ -241,33 +307,37 @@ const CartPage: React.FC = () => {
                         <ItemName>{item.name}</ItemName>
                         <ItemPrice>₽{item.price}</ItemPrice>
                       </ItemDetails>
-                      <QuantityContainer>
-                        <QuantityButton 
-                          onClick={() => decreaseQuantity(item.id)}
-                          aria-label="Decrease quantity"
-                        >
-                          {item.quantity === 1 ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="3 6 5 6 21 6"></polyline>
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                          ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <ItemControls>
+                        <QuantityContainer>
+                          <QuantityButton 
+                            onClick={() => decreaseQuantity(item.id)}
+                            aria-label="Decrease quantity"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                          )}
-                        </QuantityButton>
-                        <QuantityText>{item.quantity}</QuantityText>
-                        <QuantityButton 
-                          onClick={() => increaseQuantity(item.id)}
-                          aria-label="Increase quantity"
+                          </QuantityButton>
+                          <QuantityText>{item.quantity}</QuantityText>
+                          <QuantityButton 
+                            onClick={() => increaseQuantity(item.id)}
+                            aria-label="Increase quantity"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="12" y1="5" x2="12" y2="19"></line>
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                          </QuantityButton>
+                        </QuantityContainer>
+                        <RemoveButton 
+                          onClick={() => removeFromCart(item.id)}
+                          aria-label="Remove item"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                           </svg>
-                        </QuantityButton>
-                      </QuantityContainer>
+                        </RemoveButton>
+                      </ItemControls>
                     </CartItem>
                   ))}
                 </CartItemsContainer>
@@ -298,6 +368,7 @@ const CartPage: React.FC = () => {
             )}
           </CartContent>
         </MainContent>
+        <CartButton />
       </Container>
     </CartContainer>
   );
