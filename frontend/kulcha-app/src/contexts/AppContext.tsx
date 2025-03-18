@@ -154,44 +154,44 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
     {
       id: 1,
-      name: 'Butter Chicken',
+      name: 'Баттер Чикен',
       price: 450,
-      description: 'Tender chicken in a rich, creamy tomato sauce with butter and aromatic spices.',
-      image: '/assets/images/butter-chicken.jpg'
+      description: 'Нежная курица в богатом сливочно-томатном соусе с маслом и ароматными специями.',
+      image: '/assets/images/paneer-tikka.jpg'
     },
     {
       id: 2,
-      name: 'Paneer Tikka',
+      name: 'Панир Тикка',
       price: 350,
-      description: 'Cubes of paneer cheese marinated in spices and grilled to perfection.',
+      description: 'Кубики домашнего сыра, маринованные в специях и обжаренные до совершенства.',
       image: '/assets/images/paneer-tikka.jpg'
     },
     {
       id: 3,
-      name: 'Chicken Biryani',
+      name: 'Чикен Бирьяни',
       price: 420,
-      description: 'Fragrant basmati rice cooked with tender chicken and aromatic spices.',
+      description: 'Ароматный рис басмати, приготовленный с нежной курицей и пряными специями.',
       image: '/assets/images/chicken-biryani.jpg'
     },
     {
       id: 4,
-      name: 'Samosa',
+      name: 'Самоса',
       price: 120,
-      description: 'Crispy pastry filled with spiced potatoes and peas.',
-      image: '/assets/images/samosa.jpg'
+      description: 'Хрустящие пирожки с начинкой из пряного картофеля и гороха.',
+      image: '/assets/images/vegetable-samosa.jpg'
     },
     {
       id: 5,
-      name: 'Garlic Naan',
+      name: 'Чесночный Наан',
       price: 80,
-      description: 'Soft flatbread with garlic and butter, baked in a tandoor oven.',
-      image: '/assets/images/naan.jpg'
+      description: 'Мягкая лепешка с чесноком и маслом, запеченная в тандыре.',
+      image: '/assets/images/masala-dosa.jpg'
     },
     {
       id: 6,
-      name: 'Gulab Jamun',
+      name: 'Гулаб Джамун',
       price: 150,
-      description: 'Sweet milk solids balls soaked in sugar syrup flavored with cardamom and rose water.',
+      description: 'Сладкие шарики из молока, пропитанные сахарным сиропом с кардамоном и розовой водой.',
       image: '/assets/images/gulab-jamun.jpg'
     }
   ]);

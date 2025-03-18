@@ -150,7 +150,7 @@ const FoodItem: React.FC<FoodItemProps> = ({ id, name, description, price, item 
   // Get image URL based on food ID or generate a placeholder
   const getImageUrl = () => {
     const foodImages: Record<number, string> = {
-      1: '/assets/images/paneer-tikka.jpg',     // Используем имеющиеся изображения
+      1: '/assets/images/butter-chicken.jpg',     // Используем имеющиеся изображения
       2: '/assets/images/paneer-tikka.jpg',
       3: '/assets/images/chicken-biryani.jpg',
       4: '/assets/images/vegetable-samosa.jpg', // Исправляем имя файла

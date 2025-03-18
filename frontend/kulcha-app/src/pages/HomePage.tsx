@@ -57,7 +57,7 @@ const HeroImage = styled.div`
   right: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/assets/images/chicken-biryani.jpg');
+  background-image: url('/assets/images/paneer-tikka.jpg');
   background-position: center;
   background-size: cover;
   transform: scale(1.05);
