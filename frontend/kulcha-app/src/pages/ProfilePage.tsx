@@ -213,9 +213,9 @@ const ProfilePage: React.FC = () => {
 
   const getStatusText = (status: string) => {
     switch(status) {
-      case 'delivered': return 'Delivered';
-      case 'cancelled': return 'Cancelled';
-      default: return 'Pending';
+      case 'delivered': return 'Доставлен';
+      case 'cancelled': return 'Отменен';
+      default: return 'В обработке';
     }
   };
 
@@ -225,7 +225,7 @@ const ProfilePage: React.FC = () => {
         <Header />
         <Navigation />
         <MainContent>
-          <ProfileHeading>Your Profile</ProfileHeading>
+          <ProfileHeading>Ваш профиль</ProfileHeading>
           
           <TabContainer>
             <TabButton 
@@ -237,7 +237,7 @@ const ProfilePage: React.FC = () => {
                 <line x1="8" y1="21" x2="16" y2="21"></line>
                 <line x1="12" y1="17" x2="12" y2="21"></line>
               </svg>
-              Order History
+              История заказов
             </TabButton>
             <TabButton 
               onClick={() => setActiveTab('address')} 
@@ -247,13 +247,13 @@ const ProfilePage: React.FC = () => {
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
-              Delivery Address
+              Адрес доставки
             </TabButton>
           </TabContainer>
           
           {activeTab === 'address' && (
             <AddressSection>
-              <ProfileHeading>Delivery Address</ProfileHeading>
+              <ProfileHeading>Адрес доставки</ProfileHeading>
               {saved && (
                 <div style={{ 
                   padding: 'var(--spacing-sm)', 
@@ -269,70 +269,70 @@ const ProfilePage: React.FC = () => {
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
-                  Address saved successfully!
+                  Адрес успешно сохранен!
                 </div>
               )}
               <AddressForm onSubmit={handleSaveAddress}>
                 <FormGroup>
-                  <Label htmlFor="street">Street</Label>
+                  <Label htmlFor="street">Улица</Label>
                   <Input
                     type="text"
                     id="street"
                     name="street"
                     value={userAddress?.street || ''}
                     onChange={handleAddressChange}
-                    placeholder="Enter street name"
+                    placeholder="Введите название улицы"
                     required
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor="houseNumber">House Number</Label>
+                  <Label htmlFor="houseNumber">Номер дома</Label>
                   <Input
                     type="text"
                     id="houseNumber"
                     name="houseNumber"
                     value={userAddress?.houseNumber || ''}
                     onChange={handleAddressChange}
-                    placeholder="Enter house number"
+                    placeholder="Введите номер дома"
                     required
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor="apartment">Apartment (optional)</Label>
+                  <Label htmlFor="apartment">Квартира (необязательно)</Label>
                   <Input
                     type="text"
                     id="apartment"
                     name="apartment"
                     value={userAddress?.apartment || ''}
                     onChange={handleAddressChange}
-                    placeholder="Enter apartment number"
+                    placeholder="Введите номер квартиры"
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor="floor">Floor (optional)</Label>
+                  <Label htmlFor="floor">Этаж (необязательно)</Label>
                   <Input
                     type="text"
                     id="floor"
                     name="floor"
                     value={userAddress?.floor || ''}
                     onChange={handleAddressChange}
-                    placeholder="Enter floor number"
+                    placeholder="Введите номер этажа"
                   />
                 </FormGroup>
                 <FullWidthFormGroup>
-                  <Label htmlFor="comment">Special Instructions</Label>
+                  <Label htmlFor="comment">Дополнительные инструкции</Label>
                   <Input
                     type="text"
                     id="comment"
                     name="comment"
                     value={userAddress?.comment || ''}
                     onChange={handleAddressChange}
-                    placeholder="Any special instructions for delivery"
+                    placeholder="Любые особые инструкции для доставки"
                   />
                 </FullWidthFormGroup>
                 <FullWidthFormGroup>
                   <SaveButton type="submit">
-                    Save Address
+                    Сохранить адрес
                   </SaveButton>
                 </FullWidthFormGroup>
               </AddressForm>
@@ -341,7 +341,7 @@ const ProfilePage: React.FC = () => {
           
           {activeTab === 'orders' && (
             <ProfileSection>
-              <ProfileHeading>Order History</ProfileHeading>
+              <ProfileHeading>История заказов</ProfileHeading>
               
               {orderHistory.length === 0 ? (
                 <EmptyState>
@@ -350,10 +350,10 @@ const ProfilePage: React.FC = () => {
                     <circle cx="20" cy="21" r="1"></circle>
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                   </svg>
-                  <h3>No orders yet</h3>
-                  <p>You haven't placed any orders yet.</p>
+                  <h3>Нет заказов</h3>
+                  <p>Вы еще не сделали ни одного заказа.</p>
                   <SaveButton onClick={() => navigate('/')}>
-                    Browse Menu
+                    Посмотреть меню
                   </SaveButton>
                 </EmptyState>
               ) : (
@@ -361,7 +361,7 @@ const ProfilePage: React.FC = () => {
                   <EnhancedOrderItem key={order.id}>
                     <OrderHeader>
                       <OrderDate>
-                        <OrderId>Order #{order.id}</OrderId> - {formatDate(order.date)}
+                        <OrderId>Заказ #{order.id}</OrderId> - {formatDate(order.date)}
                       </OrderDate>
                       <OrderStatus $status={order.status}>
                         {getStatusText(order.status)}
@@ -377,9 +377,9 @@ const ProfilePage: React.FC = () => {
                     </OrderItemList>
                     <OrderFooter>
                       <div>
-                        Delivery Method: 
+                        Способ доставки: 
                         <Badge>
-                          {order.deliveryMethod === 'delivery' ? 'Delivery' : 'Pickup'}
+                          {order.deliveryMethod === 'delivery' ? 'Доставка' : 'Самовывоз'}
                         </Badge>
                       </div>
                       <OrderTotal>₽{order.totalAmount}</OrderTotal>

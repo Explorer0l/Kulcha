@@ -57,7 +57,7 @@ const HeroImage = styled.div`
   right: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/assets/images/butter-chicken.jpg');
+  background-image: url('/assets/images/chicken-biryani.jpg');
   background-position: center;
   background-size: cover;
   transform: scale(1.05);
@@ -173,9 +173,8 @@ const HomePage: React.FC = () => {
   const appetizerItems = menuItems.filter(item => [4, 5, 6].includes(item.id));
   
   const handleStartOver = () => {
-    setSelectedCity(null);
     setSelectedRestaurant(null);
-    navigate('/city-selection');
+    navigate('/restaurant-selection');
   };
   
   return (
@@ -189,16 +188,16 @@ const HomePage: React.FC = () => {
               <Hero>
                 <HeroImage />
                 <HeroContent>
-                  <HeroTitle>Delicious Indian Food Delivered</HeroTitle>
+                  <HeroTitle>Вкусная еда с доставкой</HeroTitle>
                   <HeroSubtitle>
-                    Experience authentic flavors from the best Indian restaurants
+                    Откройте для себя аутентичные вкусы лучших ресторанов
                   </HeroSubtitle>
                   <HeroButton onClick={handleExploreMenu}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
                       <polyline points="12 6 12 12 16 14"></polyline>
                     </svg>
-                    Get Started
+                    Начать
                   </HeroButton>
                 </HeroContent>
               </Hero>
@@ -208,14 +207,14 @@ const HomePage: React.FC = () => {
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                   <circle cx="12" cy="10" r="3"></circle>
                 </svg>
-                <h3>Select a location to start</h3>
-                <p>Choose your city and restaurant to browse the menu</p>
+                <h3>Выберите местоположение</h3>
+                <p>Выберите город и ресторан, чтобы просмотреть меню</p>
                 <HeroButton onClick={handleExploreMenu}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                     <circle cx="12" cy="10" r="3"></circle>
                   </svg>
-                  Select Location
+                  Выбрать местоположение
                 </HeroButton>
               </EmptyState>
             </>
@@ -226,13 +225,13 @@ const HomePage: React.FC = () => {
                 <HeroContent>
                   <HeroTitle>{selectedRestaurant.name}</HeroTitle>
                   <HeroSubtitle>
-                    Enjoy the best Indian food in {selectedCity.name}
+                    Насладитесь лучшей едой в {selectedCity.name}
                   </HeroSubtitle>
                   <HeroButton onClick={handleStartOver}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M9 14l6-6-6-6"></path>
                     </svg>
-                    Change Restaurant
+                    Сменить ресторан
                   </HeroButton>
                 </HeroContent>
               </Hero>
@@ -242,7 +241,7 @@ const HomePage: React.FC = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                   </svg>
-                  Popular Items
+                  Популярные блюда
                 </CategoryTitle>
                 <FoodGrid>
                   {popularItems.map(item => (
@@ -262,7 +261,7 @@ const HomePage: React.FC = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15.42 15.71l5.38 5.38a1 1 0 0 0 1.41 0l1.88-1.88a1 1 0 0 0 0-1.41l-5.38-5.38"></path>
                   </svg>
-                  Main Courses
+                  Основные блюда
                 </CategoryTitle>
                 <FoodGrid>
                   {mainCourseItems.map(item => (
@@ -283,7 +282,7 @@ const HomePage: React.FC = () => {
                     <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
                     <line x1="6" y1="17" x2="18" y2="17"></line>
                   </svg>
-                  Appetizers
+                  Закуски
                 </CategoryTitle>
                 <FoodGrid>
                   {appetizerItems.map(item => (

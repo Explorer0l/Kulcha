@@ -56,16 +56,16 @@ const CitySelectionPage: React.FC = () => {
       <Header />
       <Navigation />
       <MainContent>
-        <ProfileHeading>Select your city</ProfileHeading>
+        <ProfileHeading>Выберите ваш город</ProfileHeading>
         <div>
           <FormGroup>
-            <Label htmlFor="city">Select City</Label>
+            <Label htmlFor="city">Выберите город</Label>
             <Select 
               id="city" 
               value={selectedCity?.id || ''} 
               onChange={handleCityChange}
             >
-              <option value="" disabled>Select a city</option>
+              <option value="" disabled>Выберите город</option>
               {cities.map(city => (
                 <option key={city.id} value={city.id}>
                   {city.name}
@@ -74,7 +74,7 @@ const CitySelectionPage: React.FC = () => {
             </Select>
           </FormGroup>
           
-          <h3 style={{ marginTop: '30px' }}>Popular Cities</h3>
+          <h3 style={{ marginTop: '30px' }}>Популярные города</h3>
           <FoodGrid>
             {cities.map(city => (
               <CityCard 
@@ -83,7 +83,7 @@ const CitySelectionPage: React.FC = () => {
               >
                 <CityName>{city.name}</CityName>
                 <AddToCartButton>
-                  Select City
+                  Выбрать город
                 </AddToCartButton>
               </CityCard>
             ))}

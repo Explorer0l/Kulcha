@@ -178,7 +178,7 @@ const RestaurantSelectionPage: React.FC = () => {
         <Header />
         <Navigation />
         <MainContent>
-          <ProfileHeading>Restaurants in {selectedCity?.name}</ProfileHeading>
+          <ProfileHeading>Рестораны в {selectedCity?.name}</ProfileHeading>
           
           {filteredRestaurants.length === 0 ? (
             <EmptyState>
@@ -187,10 +187,10 @@ const RestaurantSelectionPage: React.FC = () => {
                 <path d="M14 11V6c0-2.8-2.2-5-5-5S4 3.2 4 6v5"></path>
                 <path d="M21 11v9c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1v-9c0-.6.4-1 1-1h2c.6 0 1 .4 1 1Z"></path>
               </svg>
-              <h3>No restaurants available</h3>
-              <p>There are no restaurants in this city yet.</p>
+              <h3>Нет доступных ресторанов</h3>
+              <p>В этом городе пока нет ресторанов.</p>
               <AddToCartButton onClick={() => navigate('/city-selection')}>
-                Select Another City
+                Выбрать другой город
               </AddToCartButton>
             </EmptyState>
           ) : (
@@ -201,12 +201,12 @@ const RestaurantSelectionPage: React.FC = () => {
                   onClick={() => handleRestaurantSelect(restaurant.id)}
                 >
                   <RestaurantImage $bgImage={getRandomImage(index)} />
-                  <RestaurantBadge>Kulcha Partner</RestaurantBadge>
+                  <RestaurantBadge>Партнер Kulcha</RestaurantBadge>
                   <RestaurantInfo className="restaurant-info">
                     <h3>{restaurant.name}</h3>
                     <p>{restaurant.address}</p>
                     <SelectButton>
-                      Select Restaurant
+                      Выбрать ресторан
                     </SelectButton>
                   </RestaurantInfo>
                 </RestaurantCard>

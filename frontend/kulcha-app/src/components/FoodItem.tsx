@@ -150,11 +150,11 @@ const FoodItem: React.FC<FoodItemProps> = ({ id, name, description, price, item 
   // Get image URL based on food ID or generate a placeholder
   const getImageUrl = () => {
     const foodImages: Record<number, string> = {
-      1: '/assets/images/butter-chicken.jpg',
+      1: '/assets/images/paneer-tikka.jpg',     // Используем имеющиеся изображения
       2: '/assets/images/paneer-tikka.jpg',
       3: '/assets/images/chicken-biryani.jpg',
-      4: '/assets/images/samosa.jpg',
-      5: '/assets/images/naan.jpg',
+      4: '/assets/images/vegetable-samosa.jpg', // Исправляем имя файла
+      5: '/assets/images/masala-dosa.jpg',      // Используем имеющееся изображение
       6: '/assets/images/gulab-jamun.jpg',
     };
     
@@ -184,7 +184,7 @@ const FoodItem: React.FC<FoodItemProps> = ({ id, name, description, price, item 
   
   return (
     <EnhancedFoodCard>
-      {isPopular && <Badge>Popular</Badge>}
+      {isPopular && <Badge>Популярное</Badge>}
       <ImageContainer>
         <EnhancedFoodImage $imageUrl={getImageUrl()} />
       </ImageContainer>
@@ -198,7 +198,7 @@ const FoodItem: React.FC<FoodItemProps> = ({ id, name, description, price, item 
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
-              Added to Cart
+              Добавлено в корзину
             </>
           ) : (
             <>
@@ -207,7 +207,7 @@ const FoodItem: React.FC<FoodItemProps> = ({ id, name, description, price, item 
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
               </svg>
-              Add to Cart
+              В корзину
             </>
           )}
         </AddButton>
