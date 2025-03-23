@@ -131,15 +131,17 @@ const OrderItemList = styled.div`
 `;
 
 const OrderItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  font-size: 0.9rem;
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
   
-  &:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 4px;
-    margin-bottom: 4px;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 `;
 
@@ -192,8 +194,10 @@ const ProfilePage: React.FC = () => {
     const { name, value } = e.target;
     updateUserAddress({
       ...userAddress || {
-        street: '',
-        houseNumber: '',
+        name: '',
+        phone: '',
+        address: '',
+        city: '',
       },
       [name]: value
     });
@@ -217,6 +221,48 @@ const ProfilePage: React.FC = () => {
       case 'cancelled': return 'Отменен';
       default: return 'В обработке';
     }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'Ожидает подтверждения';
+      case 'confirmed':
+        return 'Подтвержден';
+      case 'preparing':
+        return 'Готовится';
+      case 'ready':
+        return 'Готов к выдаче';
+      case 'delivered':
+        return 'Доставлен';
+      case 'rejected':
+        return 'Отклонен';
+      default:
+        return 'В обработке';
+    }
+  };
+  
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return '#FFC107'; // желтый
+      case 'confirmed':
+        return '#2196F3'; // синий
+      case 'preparing':
+        return '#9C27B0'; // фиолетовый
+      case 'ready':
+        return '#4CAF50'; // зеленый
+      case 'delivered':
+        return '#8BC34A'; // светло-зеленый
+      case 'rejected':
+        return '#F44336'; // красный
+      default:
+        return '#607D8B'; // серый
+    }
+  };
+  
+  const handleOrderClick = (orderId: number) => {
+    navigate(`/orders/${orderId}`);
   };
 
   return (
@@ -274,62 +320,51 @@ const ProfilePage: React.FC = () => {
               )}
               <AddressForm onSubmit={handleSaveAddress}>
                 <FormGroup>
-                  <Label htmlFor="street">Улица</Label>
+                  <Label htmlFor="name">Имя</Label>
                   <Input
                     type="text"
-                    id="street"
-                    name="street"
-                    value={userAddress?.street || ''}
+                    id="name"
+                    name="name"
+                    value={userAddress?.name || ''}
                     onChange={handleAddressChange}
-                    placeholder="Введите название улицы"
+                    placeholder="Введите ваше имя"
                     required
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor="houseNumber">Номер дома</Label>
+                  <Label htmlFor="phone">Телефон</Label>
                   <Input
-                    type="text"
-                    id="houseNumber"
-                    name="houseNumber"
-                    value={userAddress?.houseNumber || ''}
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={userAddress?.phone || ''}
                     onChange={handleAddressChange}
-                    placeholder="Введите номер дома"
+                    placeholder="+7 (___) ___-__-__"
                     required
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor="apartment">Квартира (необязательно)</Label>
+                  <Label htmlFor="city">Город</Label>
                   <Input
                     type="text"
-                    id="apartment"
-                    name="apartment"
-                    value={userAddress?.apartment || ''}
+                    id="city"
+                    name="city"
+                    value={userAddress?.city || ''}
                     onChange={handleAddressChange}
-                    placeholder="Введите номер квартиры"
+                    placeholder="Введите название города"
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor="floor">Этаж (необязательно)</Label>
+                  <Label htmlFor="address">Адрес доставки</Label>
                   <Input
                     type="text"
-                    id="floor"
-                    name="floor"
-                    value={userAddress?.floor || ''}
+                    id="address"
+                    name="address"
+                    value={userAddress?.address || ''}
                     onChange={handleAddressChange}
-                    placeholder="Введите номер этажа"
+                    placeholder="Улица, дом, квартира"
                   />
                 </FormGroup>
-                <FullWidthFormGroup>
-                  <Label htmlFor="comment">Дополнительные инструкции</Label>
-                  <Input
-                    type="text"
-                    id="comment"
-                    name="comment"
-                    value={userAddress?.comment || ''}
-                    onChange={handleAddressChange}
-                    placeholder="Любые особые инструкции для доставки"
-                  />
-                </FullWidthFormGroup>
                 <FullWidthFormGroup>
                   <SaveButton type="submit">
                     Сохранить адрес
@@ -358,33 +393,32 @@ const ProfilePage: React.FC = () => {
                 </EmptyState>
               ) : (
                 orderHistory.map(order => (
-                  <EnhancedOrderItem key={order.id}>
-                    <OrderHeader>
-                      <OrderDate>
-                        <OrderId>Заказ #{order.id}</OrderId> - {formatDate(order.date)}
-                      </OrderDate>
-                      <OrderStatus $status={order.status}>
-                        {getStatusText(order.status)}
-                      </OrderStatus>
-                    </OrderHeader>
-                    <OrderItemList>
-                      {order.items.map(item => (
-                        <OrderItem key={item.id}>
-                          <OrderItemName>{item.name} × {item.quantity}</OrderItemName>
-                          <OrderItemPrice>₽{item.price * item.quantity}</OrderItemPrice>
-                        </OrderItem>
-                      ))}
-                    </OrderItemList>
-                    <OrderFooter>
-                      <div>
-                        Способ доставки: 
-                        <Badge>
-                          {order.deliveryMethod === 'delivery' ? 'Доставка' : 'Самовывоз'}
-                        </Badge>
+                  <OrderItem key={order.id} onClick={() => handleOrderClick(order.id)}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
+                      <div style={{ fontWeight: 'bold' }}>Заказ #{order.id}</div>
+                      <div style={{ 
+                        display: 'inline-block',
+                        padding: '4px 8px',
+                        borderRadius: '12px',
+                        fontSize: '0.8rem',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        backgroundColor: getStatusColor(order.status)
+                      }}>
+                        {getStatusLabel(order.status)}
                       </div>
-                      <OrderTotal>₽{order.totalAmount}</OrderTotal>
-                    </OrderFooter>
-                  </EnhancedOrderItem>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-sm)' }}>
+                      <div>{formatDate(order.date)}</div>
+                      <div>{order.deliveryMethod === 'delivery' ? 'Доставка' : 'Самовывоз'}</div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'var(--spacing-sm)' }}>
+                      <div style={{ fontSize: '0.9rem' }}>
+                        {order.items.length} {order.items.length === 1 ? 'товар' : order.items.length >= 2 && order.items.length <= 4 ? 'товара' : 'товаров'}
+                      </div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>₽{order.totalAmount}</div>
+                    </div>
+                  </OrderItem>
                 ))
               )}
             </ProfileSection>

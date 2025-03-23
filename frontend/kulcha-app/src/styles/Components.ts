@@ -265,6 +265,35 @@ export const Label = styled.label`
   color: var(--text-secondary);
 `;
 
+interface InputProps {
+  error?: string;
+}
+
+export const Input = styled.input<InputProps>`
+  width: 100%;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid ${props => props.error ? '#F44336' : 'rgba(255, 255, 255, 0.1)'};
+  background-color: var(--background-light);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: ${props => props.error ? '#F44336' : 'var(--primary-color)'};
+    box-shadow: ${props => props.error ? '0 0 0 2px rgba(244, 67, 54, 0.2)' : '0 0 0 2px rgba(255, 159, 13, 0.2)'};
+  }
+  
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+  
+  &:hover {
+    border-color: ${props => props.error ? '#F44336' : 'var(--primary-light)'};
+  }
+`;
+
 export const Select = styled.select`
   width: 100%;
   padding: var(--spacing-md);
@@ -380,25 +409,6 @@ export const AddressSection = styled.div`
   background-color: var(--card-bg);
   border-radius: var(--border-radius-md);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-`;
-
-export const Input = styled.input`
-  width: 100%;
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  border: 1px solid #333;
-  margin-bottom: var(--spacing-md);
-  
-  &:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(255, 159, 13, 0.2);
-  }
-  
-  &::placeholder {
-    color: var(--text-tertiary);
-  }
 `;
 
 export const Badge = styled.span`

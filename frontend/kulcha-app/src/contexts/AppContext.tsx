@@ -1,27 +1,5 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-
-type DeliveryMethod = 'delivery' | 'pickup';
-
-export interface FoodItem {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  description?: string;
-}
-
-export interface CartItem extends FoodItem {
-  quantity: number;
-}
-
-export interface Order {
-  id: number;
-  items: CartItem[];
-  totalAmount: number;
-  deliveryMethod: DeliveryMethod;
-  date: string;
-  status: 'pending' | 'delivered' | 'cancelled';
-}
+import React, { createContext, useState, ReactNode } from 'react';
+import { mockCities, mockRestaurants, mockFoodItems } from '../data/mockData';
 
 export interface City {
   id: number;
@@ -33,26 +11,49 @@ export interface Restaurant {
   name: string;
   cityId: number;
   address: string;
-  image?: string;
+  description?: string;
 }
 
-export interface UserAddress {
-  street: string;
-  houseNumber: string;
-  apartment?: string;
-  floor?: string;
-  comment?: string;
+export interface FoodItem {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  img?: string;
+}
+
+export interface CartItem extends MenuItem {
+  quantity: number;
 }
 
 export interface MenuItem {
   id: number;
   name: string;
   price: number;
+  description: string;
   image: string;
-  description?: string;
 }
 
-export interface AppContextProps {
+export type DeliveryMethod = 'delivery' | 'pickup';
+
+export interface UserAddress {
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+}
+
+export interface Order {
+  id: number;
+  items: CartItem[];
+  totalAmount: number;
+  deliveryMethod: DeliveryMethod;
+  date: string;
+  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'rejected';
+  address?: UserAddress;
+}
+
+interface AppContextType {
   cities: City[];
   restaurants: Restaurant[];
   foodItems: FoodItem[];
@@ -62,80 +63,22 @@ export interface AppContextProps {
   deliveryMethod: DeliveryMethod;
   orderHistory: Order[];
   userAddress: UserAddress | null;
+  menuItems: MenuItem[];
   setSelectedCity: (city: City | null) => void;
   setSelectedRestaurant: (restaurant: Restaurant | null) => void;
   setDeliveryMethod: (method: DeliveryMethod) => void;
-  menuItems: MenuItem[];
   addToCart: (item: MenuItem) => void;
   removeFromCart: (itemId: number) => void;
   updateCartItemQuantity: (itemId: number, quantity: number) => void;
   clearCart: () => void;
   updateUserAddress: (address: UserAddress) => void;
   placeOrder: () => void;
+  updateOrderStatus: (orderId: number, status: Order['status']) => void;
   increaseQuantity: (itemId: number) => void;
   decreaseQuantity: (itemId: number) => void;
 }
 
-export const AppContext = createContext<AppContextProps | undefined>(undefined);
-
-// Mock data for the demo
-const mockCities: City[] = [
-  { id: 1, name: 'Moscow' },
-  { id: 2, name: 'Saint Petersburg' },
-  { id: 3, name: 'Novosibirsk' },
-];
-
-const mockRestaurants: Restaurant[] = [
-  { id: 1, name: 'Kulcha Central', cityId: 1, address: 'Red Square, 1' },
-  { id: 2, name: 'Kulcha Express', cityId: 1, address: 'Tverskaya St, 7' },
-  { id: 3, name: 'Kulcha Gourmet', cityId: 2, address: 'Nevsky Prospect, 28' },
-  { id: 4, name: 'Kulcha Family', cityId: 3, address: 'Lenin Square, 1' },
-];
-
-const mockFoodItems: FoodItem[] = [
-  { 
-    id: 1, 
-    name: 'Butter Chicken', 
-    price: 550, 
-    image: '/assets/images/butter-chicken.jpg',
-    description: 'Chicken curry with a spiced tomato and butter sauce'
-  },
-  { 
-    id: 2, 
-    name: 'Paneer Tikka', 
-    price: 450, 
-    image: '/assets/images/paneer-tikka.jpg',
-    description: 'Chunks of cottage cheese marinated with spices and grilled'
-  },
-  { 
-    id: 3, 
-    name: 'Chicken Biryani', 
-    price: 600, 
-    image: '/assets/images/chicken-biryani.jpg',
-    description: 'Fragrant rice dish with chicken, spices and herbs'
-  },
-  { 
-    id: 4, 
-    name: 'Masala Dosa', 
-    price: 300, 
-    image: '/assets/images/masala-dosa.jpg',
-    description: 'Crispy rice pancake with spiced potato filling'
-  },
-  { 
-    id: 5, 
-    name: 'Vegetable Samosa', 
-    price: 150, 
-    image: '/assets/images/vegetable-samosa.jpg',
-    description: 'Triangular pastry filled with spiced vegetables'
-  },
-  { 
-    id: 6, 
-    name: 'Gulab Jamun', 
-    price: 200, 
-    image: '/assets/images/gulab-jamun.jpg',
-    description: 'Sweet milk solid balls soaked in flavored syrup'
-  },
-];
+export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 interface AppProviderProps {
   children: ReactNode;
@@ -257,10 +200,21 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       deliveryMethod,
       date: new Date().toISOString(),
       status: 'pending',
+      address: userAddress || undefined
     };
 
     setOrderHistory(prev => [newOrder, ...prev]);
     clearCart();
+  };
+  
+  const updateOrderStatus = (orderId: number, status: Order['status']) => {
+    setOrderHistory(prev => 
+      prev.map(order => 
+        order.id === orderId 
+          ? { ...order, status } 
+          : order
+      )
+    );
   };
 
   const increaseQuantity = (itemId: number) => {
@@ -298,16 +252,17 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         deliveryMethod,
         orderHistory,
         userAddress,
+        menuItems,
         setSelectedCity,
         setSelectedRestaurant,
         setDeliveryMethod,
-        menuItems,
         addToCart,
         removeFromCart,
         updateCartItemQuantity,
         clearCart,
         updateUserAddress,
         placeOrder,
+        updateOrderStatus,
         increaseQuantity,
         decreaseQuantity,
       }}
