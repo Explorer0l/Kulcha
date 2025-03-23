@@ -150,7 +150,8 @@ const CategoryNav = styled.div<{ $isSticky: boolean }>`
   }
   
   @media (max-width: 600px) {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
   }
 `;
 
@@ -165,10 +166,19 @@ const CategoryButton = styled.button<{ $active: boolean }>`
   white-space: nowrap;
   display: flex;
   align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
   
   svg, span {
     margin-right: var(--spacing-xs);
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
   }
   
   &:hover {
@@ -177,14 +187,25 @@ const CategoryButton = styled.button<{ $active: boolean }>`
   }
   
   @media (max-width: 600px) {
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.9rem;
+    min-height: 48px;
+    min-width: 110px;
+    
+    svg, span {
+      font-size: 1.1rem;
+      margin-right: var(--spacing-sm);
+    }
   }
 `;
 
 const StickyNavPlaceholder = styled.div<{ $isVisible: boolean }>`
   height: ${props => props.$isVisible ? '68px' : '0'};
   transition: height 0.3s ease;
+  
+  @media (max-width: 600px) {
+    height: ${props => props.$isVisible ? '76px' : '0'};
+  }
 `;
 
 const CategoryTitle = styled(Heading)`
@@ -213,7 +234,6 @@ const HomePage: React.FC = () => {
     selectedCity, 
     selectedRestaurant, 
     menuItems,
-    setSelectedCity,
     setSelectedRestaurant 
   } = useAppContext();
   const { hideBackButton, hideMainButton } = useTelegram();
@@ -222,11 +242,20 @@ const HomePage: React.FC = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const [initialNavPosition, setInitialNavPosition] = useState<number | null>(null);
+  
+  // Отслеживание того, был ли последний скролл вызван кликом по категории
+  const [isManualScroll, setIsManualScroll] = useState(false);
+  // Время последнего клика по категории
+  const lastClickTime = useRef(0);
+  
   const categoryNavRef = useRef<HTMLDivElement>(null);
   const popularRef = useRef<HTMLDivElement>(null);
   const mainCoursesRef = useRef<HTMLDivElement>(null);
   const appetizersRef = useRef<HTMLDivElement>(null);
   const dessertsRef = useRef<HTMLDivElement>(null);
+  
+  // Отключение обработки скролла после программного скролла
+  const scrollTimeoutId = useRef<number | null>(null);
   
   useEffect(() => {
     hideBackButton();
@@ -245,6 +274,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const now = Date.now();
       
       // Определяем направление скролла
       if (currentScrollY > lastScrollY) {
@@ -256,6 +286,7 @@ const HomePage: React.FC = () => {
       // Сохраняем текущую позицию скролла
       setLastScrollY(currentScrollY);
       
+      // Обработка фиксации навигационной панели категорий
       if (categoryNavRef.current && initialNavPosition !== null) {
         // Проверяем, находимся ли мы выше начальной позиции навигации
         if (currentScrollY < initialNavPosition - 1) { // -1 для небольшого порога
@@ -277,28 +308,68 @@ const HomePage: React.FC = () => {
         }
       }
       
-      // Update active category based on scroll position
-      const scrollPos = currentScrollY + 100;
-      
-      if (dessertsRef.current && scrollPos >= dessertsRef.current.offsetTop) {
-        setActiveCategory('desserts');
-      } else if (appetizersRef.current && scrollPos >= appetizersRef.current.offsetTop) {
-        setActiveCategory('appetizers');
-      } else if (mainCoursesRef.current && scrollPos >= mainCoursesRef.current.offsetTop) {
-        setActiveCategory('main');
-      } else if (popularRef.current && scrollPos >= popularRef.current.offsetTop) {
-        setActiveCategory('popular');
+      // Пропускаем определение активной категории, если это программный скролл после клика
+      // Проверяем, прошло ли достаточно времени с момента последнего клика (2 секунды)
+      if (isManualScroll || now - lastClickTime.current < 2000) {
+        return;
       }
+      
+      // Если скорость скролла слишком высокая, пропускаем обновление категории
+      if (Math.abs(currentScrollY - lastScrollY) > 50) {
+        return;
+      }
+      
+      // Используем таймаут для обновления активной категории после скролла с debounce
+      if (scrollTimeoutId.current) {
+        clearTimeout(scrollTimeoutId.current);
+      }
+      
+      scrollTimeoutId.current = window.setTimeout(() => {
+        // Добавляем отступ для определения активной категории
+        const scrollPos = currentScrollY + 100;
+        
+        // Увеличиваем пороги переключения для более стабильного определения категории
+        // Определяем активную категорию на основе более жёстких порогов
+        const categoryPositions = [
+          { id: 'desserts', position: dessertsRef.current?.offsetTop || 0 },
+          { id: 'appetizers', position: appetizersRef.current?.offsetTop || 0 },
+          { id: 'main', position: mainCoursesRef.current?.offsetTop || 0 },
+          { id: 'popular', position: popularRef.current?.offsetTop || 0 }
+        ].filter(item => item.position > 0)
+         .sort((a, b) => b.position - a.position); // Сортируем от больших позиций к меньшим
+        
+        // Находим первую категорию, чья позиция меньше текущей позиции скролла с порогом
+        // Используем большой порог (70px), чтобы избежать частых переключений
+        const activeItem = categoryPositions.find(item => scrollPos >= (item.position - 70));
+        
+        // Устанавливаем активную категорию только если она найдена
+        if (activeItem) {
+          setActiveCategory(activeItem.id);
+        }
+      }, 200); // Больший таймаут для debounce (200мс)
     };
     
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY, scrollDirection, initialNavPosition]);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutId.current) {
+        clearTimeout(scrollTimeoutId.current);
+      }
+    };
+  }, [lastScrollY, scrollDirection, initialNavPosition, isManualScroll]);
   
   const scrollToCategory = (categoryId: string) => {
+    // Запоминаем время клика
+    lastClickTime.current = Date.now();
+    
+    // Устанавливаем флаг программного скролла
+    setIsManualScroll(true);
+    
+    // Устанавливаем активную категорию немедленно
     setActiveCategory(categoryId);
     
-    let element;
+    // Затем выполняем скроллинг
+    let element: HTMLDivElement | null = null;
     switch(categoryId) {
       case 'popular':
         element = popularRef.current;
@@ -317,14 +388,26 @@ const HomePage: React.FC = () => {
     }
     
     if (element) {
-      window.scrollTo({
-        top: element.offsetTop - 70,
-        behavior: 'smooth'
+      // Используем requestAnimationFrame для плавной анимации
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: element!.offsetTop - 70,
+          behavior: 'smooth'
+        });
+        
+        // Очищаем флаг программного скролла через значительное время
+        // Это предотвратит перерасчет активной категории на основе скролла сразу после клика
+        setTimeout(() => {
+          setIsManualScroll(false);
+        }, 2000); // Гораздо больший таймаут (2 секунды)
       });
     }
   };
   
   const handleExploreMenu = () => {
+    // Скрываем кнопку Telegram перед переходом на страницы выбора
+    hideMainButton();
+    
     if (!selectedCity) {
       navigate('/city-selection');
     } else if (!selectedRestaurant) {

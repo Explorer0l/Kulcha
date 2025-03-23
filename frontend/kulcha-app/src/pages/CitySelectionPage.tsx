@@ -11,7 +11,7 @@ import { FoodGrid, CityCard, CityName, AddToCartButton } from '../styles/Compone
 const CitySelectionPage: React.FC = () => {
   const navigate = useNavigate();
   const { cities, selectedCity, setSelectedCity } = useAppContext();
-  const { showBackButton, hideBackButton, setBackButtonCallback, showMainButton, setMainButtonCallback } = useTelegram();
+  const { hideBackButton, hideMainButton } = useTelegram();
 
   useEffect(() => {
     if (cities.length === 0) {
@@ -22,18 +22,12 @@ const CitySelectionPage: React.FC = () => {
 
   useEffect(() => {
     hideBackButton();
-    showMainButton('Continue');
+    hideMainButton();
     
-    setMainButtonCallback(() => {
-      if (selectedCity) {
-        navigate('/restaurants');
-      }
-    });
-
     return () => {
       hideBackButton();
     };
-  }, [hideBackButton, navigate, selectedCity, setBackButtonCallback, setMainButtonCallback, showMainButton]);
+  }, [hideBackButton, hideMainButton]);
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const cityId = parseInt(e.target.value, 10);

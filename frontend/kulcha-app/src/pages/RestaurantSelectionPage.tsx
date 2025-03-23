@@ -7,7 +7,6 @@ import {
   FoodGrid, 
   AddToCartButton,
   EmptyState,
-  FormGroup,
   Input,
   PageTransition
 } from '../styles/Components';
@@ -167,7 +166,8 @@ const RestaurantSelectionPage: React.FC = () => {
   
   const { 
     showBackButton, 
-    hideBackButton, 
+    hideBackButton,
+    hideMainButton,
     setBackButtonCallback
   } = useTelegram();
 
@@ -196,6 +196,8 @@ const RestaurantSelectionPage: React.FC = () => {
 
   useEffect(() => {
     showBackButton();
+    // Скрываем главную кнопку Telegram
+    hideMainButton();
     
     setBackButtonCallback(() => {
       navigate('/city-selection');
@@ -204,7 +206,7 @@ const RestaurantSelectionPage: React.FC = () => {
     return () => {
       hideBackButton();
     };
-  }, [hideBackButton, navigate, setBackButtonCallback, showBackButton]);
+  }, [hideBackButton, navigate, setBackButtonCallback, showBackButton, hideMainButton]);
 
   const handleRestaurantSelect = (restaurantId: number) => {
     const restaurant = restaurants.find(r => r.id === restaurantId);
