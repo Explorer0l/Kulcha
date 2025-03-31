@@ -227,7 +227,7 @@ const CheckoutButton = styled(Button)`
 `;
 
 const CartPage: React.FC = () => {
-  const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useAppContext();
+  const { cart, updateCartItemQuantity, removeFromCart, clearCart } = useAppContext();
   const navigate = useNavigate();
   const { showBackButton, hideBackButton, setBackButtonCallback } = useTelegram();
   
@@ -254,6 +254,18 @@ const CartPage: React.FC = () => {
   const deliveryFee = 150;
   const subtotal = calculateTotal();
   const total = subtotal + deliveryFee;
+
+  const handleIncreaseQuantity = (itemId: number, currentQuantity: number) => {
+    updateCartItemQuantity(itemId, currentQuantity + 1);
+  };
+
+  const handleDecreaseQuantity = (itemId: number, currentQuantity: number) => {
+    if (currentQuantity > 1) {
+      updateCartItemQuantity(itemId, currentQuantity - 1);
+    } else {
+      removeFromCart(itemId);
+    }
+  };
 
   return (
     <CartContainer>
@@ -294,7 +306,7 @@ const CartPage: React.FC = () => {
                 </svg>
                 <h3>Ваша корзина пуста</h3>
                 <p>Добавьте вкусные блюда в корзину и возвращайтесь!</p>
-                <Button onClick={() => navigate('/')}>
+                <Button onClick={() => navigate('/home')}>
                   Посмотреть меню
                 </Button>
               </EmptyState>
@@ -310,7 +322,7 @@ const CartPage: React.FC = () => {
                       <ItemControls>
                         <QuantityContainer>
                           <QuantityButton 
-                            onClick={() => decreaseQuantity(item.id)}
+                            onClick={() => handleDecreaseQuantity(item.id, item.quantity)}
                             aria-label="Decrease quantity"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -319,7 +331,7 @@ const CartPage: React.FC = () => {
                           </QuantityButton>
                           <QuantityText>{item.quantity}</QuantityText>
                           <QuantityButton 
-                            onClick={() => increaseQuantity(item.id)}
+                            onClick={() => handleIncreaseQuantity(item.id, item.quantity)}
                             aria-label="Increase quantity"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

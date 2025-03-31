@@ -1,281 +1,336 @@
-import React, { createContext, useState, ReactNode } from 'react';
-import { mockCities, mockRestaurants, mockFoodItems } from '../data/mockData';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { 
+  DeliveryMethod, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  MenuItem, 
+  UserAddress, 
+  CartItem, 
+  Order,
+  addOrder
+} from '../data/adminDatabase';
 
-export interface City {
-  id: number;
-  name: string;
-}
+// Импортируем типы из mockData.ts
+import { City, Restaurant, FoodItem } from '../data/mockData';
 
-export interface Restaurant {
-  id: number;
-  name: string;
-  cityId: number;
-  address: string;
-  description?: string;
-}
-
-export interface FoodItem {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  img?: string;
-}
-
-export interface CartItem extends MenuItem {
-  quantity: number;
-}
-
-export interface MenuItem {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  image: string;
-}
-
-export type DeliveryMethod = 'delivery' | 'pickup';
-
-export interface UserAddress {
-  name: string;
-  phone: string;
-  address: string;
-  city: string;
-}
-
-export interface Order {
-  id: number;
-  items: CartItem[];
-  totalAmount: number;
-  deliveryMethod: DeliveryMethod;
-  date: string;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'rejected';
-  address?: UserAddress;
-}
-
-interface AppContextType {
+// Тип данных для состояния приложения
+interface AppState {
+  isAuthenticated: boolean;
+  userRole: string | null;
+  selectedCity: City | null;
+  selectedRestaurant: number | null;
+  isDarkMode: boolean;
   cities: City[];
   restaurants: Restaurant[];
-  foodItems: FoodItem[];
-  cart: CartItem[];
-  selectedCity: City | null;
-  selectedRestaurant: Restaurant | null;
+  menuItems: FoodItem[];
   deliveryMethod: DeliveryMethod;
+  cart: CartItem[];
   orderHistory: Order[];
-  userAddress: UserAddress | null;
-  menuItems: MenuItem[];
-  setSelectedCity: (city: City | null) => void;
-  setSelectedRestaurant: (restaurant: Restaurant | null) => void;
-  setDeliveryMethod: (method: DeliveryMethod) => void;
-  addToCart: (item: MenuItem) => void;
-  removeFromCart: (itemId: number) => void;
-  updateCartItemQuantity: (itemId: number, quantity: number) => void;
-  clearCart: () => void;
-  updateUserAddress: (address: UserAddress) => void;
-  placeOrder: () => void;
-  updateOrderStatus: (orderId: number, status: Order['status']) => void;
-  increaseQuantity: (itemId: number) => void;
-  decreaseQuantity: (itemId: number) => void;
 }
 
-export const AppContext = createContext<AppContextType | undefined>(undefined);
+// Тип данных для контекста приложения
+interface AppContextType extends AppState {
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+  setUserRole: (role: string | null) => void;
+  setSelectedCity: (city: City | null) => void;
+  setSelectedRestaurant: (restaurantId: number | null) => void;
+  toggleDarkMode: () => void;
+  setDeliveryMethod: (method: DeliveryMethod) => void;
+  addToCart: (item: CartItem) => void;
+  updateCartItemQuantity: (itemId: number, quantity: number) => void;
+  removeFromCart: (itemId: number) => void;
+  clearCart: () => void;
+  addToOrderHistory: (order: Order) => void;
+  placeOrder: () => Order;
+  updateUserAddress: (address: UserAddress) => void;
+  userAddress: UserAddress | null;
+}
 
+// Создаем контекст с начальным значением undefined
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+// Хук для использования контекста
+export const useAppContext = (): AppContextType => {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error('useAppContext must be used within an AppProvider');
+  }
+  return context;
+};
+
+// Пропсы для провайдера
 interface AppProviderProps {
   children: ReactNode;
 }
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const [cities] = useState<City[]>(mockCities);
-  const [restaurants] = useState<Restaurant[]>(mockRestaurants);
-  const [foodItems] = useState<FoodItem[]>(mockFoodItems);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [cityState, setCityState] = useState<City | null>(null);
-  const [restaurantState, setRestaurantState] = useState<Restaurant | null>(null);
-  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>('delivery');
-  const [orderHistory, setOrderHistory] = useState<Order[]>([]);
+  // Импортируем данные для демонстрации
+  const { mockCities, mockRestaurants, mockFoodItems } = require('../data/mockData');
+
+  // Проверяем localStorage для начальных значений
+  const getInitialState = (): AppState => {
+    return {
+      isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
+      userRole: localStorage.getItem('userRole'),
+      selectedCity: localStorage.getItem('selectedCity') 
+        ? JSON.parse(localStorage.getItem('selectedCity') || '{}') 
+        : null,
+      selectedRestaurant: localStorage.getItem('selectedRestaurant') 
+        ? Number(localStorage.getItem('selectedRestaurant')) 
+        : null,
+      isDarkMode: localStorage.getItem('isDarkMode') === 'true',
+      cities: mockCities,
+      restaurants: mockRestaurants,
+      menuItems: mockFoodItems,
+      deliveryMethod: 'delivery',
+      cart: [],
+      orderHistory: []
+    };
+  };
+
+  const [state, setState] = useState<AppState>(getInitialState);
+
+  // Начальный адрес пользователя
   const [userAddress, setUserAddress] = useState<UserAddress | null>(null);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
-    {
-      id: 1,
-      name: 'Баттер Чикен',
-      price: 450,
-      description: 'Нежная курица в богатом сливочно-томатном соусе с маслом и ароматными специями.',
-      image: '/assets/images/paneer-tikka.jpg'
-    },
-    {
-      id: 2,
-      name: 'Панир Тикка',
-      price: 350,
-      description: 'Кубики домашнего сыра, маринованные в специях и обжаренные до совершенства.',
-      image: '/assets/images/paneer-tikka.jpg'
-    },
-    {
-      id: 3,
-      name: 'Чикен Бирьяни',
-      price: 420,
-      description: 'Ароматный рис басмати, приготовленный с нежной курицей и пряными специями.',
-      image: '/assets/images/chicken-biryani.jpg'
-    },
-    {
-      id: 4,
-      name: 'Самоса',
-      price: 120,
-      description: 'Хрустящие пирожки с начинкой из пряного картофеля и гороха.',
-      image: '/assets/images/vegetable-samosa.jpg'
-    },
-    {
-      id: 5,
-      name: 'Чесночный Наан',
-      price: 80,
-      description: 'Мягкая лепешка с чесноком и маслом, запеченная в тандыре.',
-      image: '/assets/images/masala-dosa.jpg'
-    },
-    {
-      id: 6,
-      name: 'Гулаб Джамун',
-      price: 150,
-      description: 'Сладкие шарики из молока, пропитанные сахарным сиропом с кардамоном и розовой водой.',
-      image: '/assets/images/gulab-jamun.jpg'
+
+  const setIsAuthenticated = (isAuthenticated: boolean) => {
+    localStorage.setItem('isAuthenticated', String(isAuthenticated));
+    setState(prevState => ({ ...prevState, isAuthenticated }));
+  };
+
+  const setUserRole = (role: string | null) => {
+    if (role) {
+      localStorage.setItem('userRole', role);
+    } else {
+      localStorage.removeItem('userRole');
     }
-  ]);
+    setState(prevState => ({ ...prevState, userRole: role }));
+  };
 
   const setSelectedCity = (city: City | null) => {
-    setCityState(city);
-    if (!city) {
-      setRestaurantState(null);
+    if (city) {
+      localStorage.setItem('selectedCity', JSON.stringify(city));
+    } else {
+      localStorage.removeItem('selectedCity');
     }
+    setState(prevState => ({ ...prevState, selectedCity: city }));
   };
 
-  const setSelectedRestaurant = (restaurant: Restaurant | null) => {
-    setRestaurantState(restaurant);
+  const setSelectedRestaurant = (restaurantId: number | null) => {
+    if (restaurantId !== null) {
+      localStorage.setItem('selectedRestaurant', String(restaurantId));
+    } else {
+      localStorage.removeItem('selectedRestaurant');
+    }
+    setState(prevState => ({ ...prevState, selectedRestaurant: restaurantId }));
   };
 
-  // Get derived values for public API
-  const selectedCity = cityState;
-  const selectedRestaurant = restaurantState;
+  const toggleDarkMode = () => {
+    const newDarkModeState = !state.isDarkMode;
+    localStorage.setItem('isDarkMode', String(newDarkModeState));
+    
+    // Применяем или удаляем класс темной темы к body
+    if (newDarkModeState) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+    
+    setState(prevState => ({ ...prevState, isDarkMode: newDarkModeState }));
+  };
 
-  const addToCart = (item: MenuItem) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
+  // Функция для изменения метода доставки
+  const setDeliveryMethod = (method: DeliveryMethod) => {
+    setState(prevState => ({ ...prevState, deliveryMethod: method }));
+  };
+
+  // Функция для добавления товара в корзину
+  const addToCart = (item: CartItem) => {
+    setState(prevState => {
+      // Проверяем, есть ли уже такой товар в корзине
+      const existingItemIndex = prevState.cart.findIndex(cartItem => cartItem.id === item.id);
       
-      if (existingItem) {
-        return prevCart.map(cartItem => 
-          cartItem.id === item.id 
-            ? { ...cartItem, quantity: cartItem.quantity + 1 } 
-            : cartItem
-        );
+      if (existingItemIndex >= 0) {
+        // Если товар уже есть, увеличиваем количество на 1
+        const updatedCart = [...prevState.cart];
+        updatedCart[existingItemIndex].quantity += 1;
+        return { ...prevState, cart: updatedCart };
       } else {
-        return [...prevCart, { ...item, quantity: 1 }];
+        // Если товара нет, добавляем его в корзину
+        return { ...prevState, cart: [...prevState.cart, item] };
       }
     });
   };
 
-  const removeFromCart = (itemId: number) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== itemId));
-  };
-
+  // Функция для обновления количества товара в корзине
   const updateCartItemQuantity = (itemId: number, quantity: number) => {
-    setCart(prevCart => 
-      prevCart.map(item => 
+    setState(prevState => {
+      const updatedCart = prevState.cart.map(item => 
         item.id === itemId ? { ...item, quantity } : item
-      )
-    );
+      );
+      return { ...prevState, cart: updatedCart };
+    });
   };
 
+  // Функция для удаления товара из корзины
+  const removeFromCart = (itemId: number) => {
+    setState(prevState => ({
+      ...prevState,
+      cart: prevState.cart.filter(item => item.id !== itemId)
+    }));
+  };
+
+  // Функция для очистки корзины
   const clearCart = () => {
-    setCart([]);
+    setState(prevState => ({ ...prevState, cart: [] }));
   };
 
+  // Функция для добавления заказа в историю
+  const addToOrderHistory = (order: Order) => {
+    setState(prevState => ({
+      ...prevState,
+      orderHistory: [...prevState.orderHistory, order]
+    }));
+  };
+
+  // Функция для обновления адреса пользователя
   const updateUserAddress = (address: UserAddress) => {
     setUserAddress(address);
   };
 
+  // Функция для размещения заказа
   const placeOrder = () => {
-    if (cart.length === 0) return;
-
+    // Создаем новый заказ на основе данных корзины
     const newOrder: Order = {
-      id: Date.now(),
-      items: [...cart],
-      totalAmount: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-      deliveryMethod,
+      id: Date.now(), // Генерируем уникальный ID
+      items: [...state.cart],
+      totalAmount: state.cart.reduce((total, item) => total + item.price * item.quantity, 0),
       date: new Date().toISOString(),
       status: 'pending',
-      address: userAddress || undefined
+      deliveryMethod: state.deliveryMethod,
+      restaurantId: state.selectedRestaurant || 0,
+      userAddress: userAddress || undefined
+    };
+    
+    console.log('Creating new order:', {
+      id: newOrder.id,
+      restaurantId: newOrder.restaurantId,
+      items: newOrder.items.length,
+      total: newOrder.totalAmount
+    });
+    
+    // Добавляем заказ в историю
+    addToOrderHistory(newOrder);
+    
+    // Синхронизируем с админ-панелью владельца ресторана
+    if (state.selectedRestaurant) {
+      const customerName = userAddress ? userAddress.name : 'Гость';
+      
+      console.log('Synchronizing order with admin panel:', {
+        restaurantId: state.selectedRestaurant,
+        customer: customerName,
+        amount: newOrder.totalAmount
+      });
+      
+      try {
+        // Создаем заказ для админ-панели
+        const adminOrder = addOrder({
+          restaurantId: state.selectedRestaurant,
+          customer: customerName,
+          date: new Date().toISOString(),
+          amount: newOrder.totalAmount,
+          status: 'pending' // Начальный статус заказа всегда "в обработке"
+        });
+        
+        if (adminOrder.id > 0) {
+          console.log('Order successfully synchronized with admin panel, created admin order ID:', adminOrder.id);
+        } else {
+          console.error('Failed to create admin order, using fallback');
+          // Пробуем альтернативный подход в случае ошибки
+          setTimeout(() => {
+            try {
+              addOrder({
+                restaurantId: state.selectedRestaurant || 0,
+                customer: customerName,
+                date: new Date().toISOString(),
+                amount: newOrder.totalAmount,
+                status: 'pending'
+              });
+              console.log('Fallback admin order created successfully');
+            } catch (retryError) {
+              console.error('Fallback admin order creation failed:', retryError);
+            }
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('Error synchronizing with admin panel:', error);
+      }
+    } else {
+      console.warn('Cannot synchronize with admin panel: missing restaurantId');
+    }
+    
+    // Очищаем корзину после заказа
+    clearCart();
+    
+    return newOrder;
+  };
+
+  // Эффект для синхронизации изменений меню из админ-панели
+  useEffect(() => {
+    // Обработчик обновления меню
+    const handleMenuUpdate = (e: CustomEvent) => {
+      // Проверяем, относится ли обновление к выбранному ресторану
+      if (state.selectedRestaurant) {
+        const updatedMenu = e.detail.menuItems;
+        if (Array.isArray(updatedMenu)) {
+          // Обновляем состояние с новым меню
+          setState(prevState => ({
+            ...prevState,
+            menuItems: updatedMenu
+          }));
+          console.log('Menu synchronized with admin changes:', updatedMenu.length);
+        }
+      }
     };
 
-    setOrderHistory(prev => [newOrder, ...prev]);
-    clearCart();
-  };
-  
-  const updateOrderStatus = (orderId: number, status: Order['status']) => {
-    setOrderHistory(prev => 
-      prev.map(order => 
-        order.id === orderId 
-          ? { ...order, status } 
-          : order
-      )
-    );
-  };
+    // Добавляем слушатель события
+    window.addEventListener('menuItemsUpdated', handleMenuUpdate as EventListener);
 
-  const increaseQuantity = (itemId: number) => {
-    setCart(prevCart => 
-      prevCart.map(item => 
-        item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
+    // Очищаем слушатель при размонтировании
+    return () => {
+      window.removeEventListener('menuItemsUpdated', handleMenuUpdate as EventListener);
+    };
+  }, [state.selectedRestaurant]);
 
-  const decreaseQuantity = (itemId: number) => {
-    setCart(prevCart => {
-      const updatedCart = prevCart.map(item => 
-        item.id === itemId ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
-      );
-      
-      // If quantity is 0, remove the item
-      if (updatedCart.find(item => item.id === itemId)?.quantity === 0) {
-        return updatedCart.filter(item => item.id !== itemId);
-      }
-      
-      return updatedCart;
-    });
-  };
+  // Применяем тему при инициализации
+  React.useEffect(() => {
+    if (state.isDarkMode) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+  }, [state.isDarkMode]);
 
   return (
-    <AppContext.Provider
-      value={{
-        cities,
-        restaurants,
-        foodItems,
-        cart,
-        selectedCity,
-        selectedRestaurant,
-        deliveryMethod,
-        orderHistory,
-        userAddress,
-        menuItems,
-        setSelectedCity,
-        setSelectedRestaurant,
-        setDeliveryMethod,
-        addToCart,
-        removeFromCart,
-        updateCartItemQuantity,
-        clearCart,
-        updateUserAddress,
-        placeOrder,
-        updateOrderStatus,
-        increaseQuantity,
-        decreaseQuantity,
-      }}
-    >
+    <AppContext.Provider value={{
+      ...state,
+      setIsAuthenticated,
+      setUserRole,
+      setSelectedCity,
+      setSelectedRestaurant,
+      toggleDarkMode,
+      setDeliveryMethod,
+      addToCart,
+      updateCartItemQuantity,
+      removeFromCart,
+      clearCart,
+      addToOrderHistory,
+      placeOrder,
+      updateUserAddress,
+      userAddress,
+    }}>
       {children}
     </AppContext.Provider>
   );
 };
 
-export const useAppContext = () => {
-  const context = React.useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useAppContext must be used within an AppProvider');
-  }
-  return context;
-}; 
+export default AppContext; 

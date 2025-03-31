@@ -7,11 +7,15 @@ import CartButton from '../components/CartButton';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import { FoodGrid, CityCard, CityName, AddToCartButton } from '../styles/Components';
+import { mockCities } from '../data/mockData';
 
 const CitySelectionPage: React.FC = () => {
   const navigate = useNavigate();
-  const { cities, selectedCity, setSelectedCity } = useAppContext();
+  const { selectedCity, setSelectedCity } = useAppContext();
   const { hideBackButton, hideMainButton } = useTelegram();
+
+  // Используем mockCities напрямую, чтобы быть уверенными, что у нас есть данные
+  const cities = mockCities;
 
   useEffect(() => {
     if (cities.length === 0) {

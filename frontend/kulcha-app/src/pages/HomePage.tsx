@@ -1,20 +1,19 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { 
   Container, 
   MainContent,
-  Heading,
-  FoodGrid,
   EmptyState,
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
-import FoodItem from '../components/FoodItem';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import CartButton from '../components/CartButton';
+import { getMenuItems } from '../data/adminDatabase';
+import RestaurantMenu from './RestaurantMenu';
 
 const HomeContainer = styled(PageTransition)`
   min-height: 70vh;
@@ -125,107 +124,18 @@ const HeroButton = styled.button`
   }
 `;
 
-const CategoryNav = styled.div<{ $isSticky: boolean }>`
-  display: flex;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  background-color: var(--background-color);
-  overflow-x: auto;
-  border-radius: var(--border-radius-md);
+const RestaurantInfo = styled.div`
   margin-bottom: var(--spacing-lg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  z-index: 10;
-  
-  position: ${props => props.$isSticky ? 'fixed' : 'relative'};
-  top: ${props => props.$isSticky ? '0' : 'auto'};
-  left: ${props => props.$isSticky ? '0' : 'auto'};
-  right: ${props => props.$isSticky ? '0' : 'auto'};
-  width: ${props => props.$isSticky ? '100%' : 'auto'};
-  border-radius: ${props => props.$isSticky ? '0' : 'var(--border-radius-md)'};
-  box-shadow: ${props => props.$isSticky ? '0 2px 10px rgba(0, 0, 0, 0.1)' : '0 2px 8px rgba(0, 0, 0, 0.05)'};
-  transition: all 0.3s ease;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  
-  @media (max-width: 600px) {
-    padding: var(--spacing-md);
-    gap: var(--spacing-md);
-  }
 `;
 
-const CategoryButton = styled.button<{ $active: boolean }>`
-  background-color: ${props => props.$active ? 'var(--primary-color)' : 'var(--card-bg)'};
-  color: ${props => props.$active ? 'white' : 'var(--text-color)'};
-  border: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  font-weight: ${props => props.$active ? '600' : '400'};
-  cursor: pointer;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.95rem;
-  
-  svg, span {
-    margin-right: var(--spacing-xs);
-    font-size: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
-  
-  &:hover {
-    background-color: ${props => props.$active ? 'var(--primary-light)' : 'var(--card-hover)'};
-    transform: translateY(-2px);
-  }
-  
-  @media (max-width: 600px) {
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: 0.9rem;
-    min-height: 48px;
-    min-width: 110px;
-    
-    svg, span {
-      font-size: 1.1rem;
-      margin-right: var(--spacing-sm);
-    }
-  }
+const RestaurantName = styled.h2`
+  color: var(--text-color);
+  margin: 0 0 var(--spacing-xs) 0;
 `;
 
-const StickyNavPlaceholder = styled.div<{ $isVisible: boolean }>`
-  height: ${props => props.$isVisible ? '68px' : '0'};
-  transition: height 0.3s ease;
-  
-  @media (max-width: 600px) {
-    height: ${props => props.$isVisible ? '76px' : '0'};
-  }
-`;
-
-const CategoryTitle = styled(Heading)`
-  display: flex;
-  align-items: center;
-  margin-top: var(--spacing-xl);
-  
-  svg {
-    margin-right: var(--spacing-sm);
-    color: var(--primary-color);
-  }
-`;
-
-const PopularFoodsContainer = styled.div`
-  margin-bottom: var(--spacing-xl);
-`;
-
-const CategoryContainer = styled.div`
-  margin-bottom: var(--spacing-xl);
-  scroll-margin-top: 80px;
+const RestaurantAdditionalInfo = styled.p`
+  color: var(--text-secondary);
+  margin: 0;
 `;
 
 const HomePage: React.FC = () => {
@@ -233,176 +143,40 @@ const HomePage: React.FC = () => {
   const { 
     selectedCity, 
     selectedRestaurant, 
-    menuItems,
-    setSelectedRestaurant 
+    setSelectedRestaurant,
+    restaurants
   } = useAppContext();
   const { hideBackButton, hideMainButton } = useTelegram();
-  const [activeCategory, setActiveCategory] = useState('popular');
-  const [isNavSticky, setIsNavSticky] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
-  const [initialNavPosition, setInitialNavPosition] = useState<number | null>(null);
   
-  // Отслеживание того, был ли последний скролл вызван кликом по категории
-  const [isManualScroll, setIsManualScroll] = useState(false);
-  // Время последнего клика по категории
-  const lastClickTime = useRef(0);
+  // Используем меню из adminDatabase вместо mockData
+  const [menuItems, setMenuItems] = useState<any[]>([]);
   
-  const categoryNavRef = useRef<HTMLDivElement>(null);
-  const popularRef = useRef<HTMLDivElement>(null);
-  const mainCoursesRef = useRef<HTMLDivElement>(null);
-  const appetizersRef = useRef<HTMLDivElement>(null);
-  const dessertsRef = useRef<HTMLDivElement>(null);
-  
-  // Отключение обработки скролла после программного скролла
-  const scrollTimeoutId = useRef<number | null>(null);
+  // Получаем данные о выбранном ресторане и city из контекста
+  const selectedRestaurantData = selectedRestaurant 
+    ? restaurants.find(r => r.id === selectedRestaurant) 
+    : null;
   
   useEffect(() => {
     hideBackButton();
     hideMainButton();
-  }, [hideBackButton, hideMainButton]);
+
+    // Проверяем выбран ли город и ресторан
+    if (!selectedCity) {
+      // Если город не выбран, перенаправляем на выбор города
+      navigate('/city-selection', { replace: true });
+    } else if (!selectedRestaurant) {
+      // Если город выбран, но ресторан нет, перенаправляем на выбор ресторана
+      navigate('/restaurant-selection', { replace: true });
+    }
+  }, [hideBackButton, hideMainButton, selectedCity, selectedRestaurant, navigate]);
   
-  // Сохраняем начальную позицию навигации после рендеринга
   useEffect(() => {
-    if (categoryNavRef.current && initialNavPosition === null) {
-      // Сохраняем абсолютную позицию относительно страницы
-      const navPosition = categoryNavRef.current.getBoundingClientRect().top + window.scrollY;
-      setInitialNavPosition(navPosition);
+    if (selectedRestaurant) {
+      // Загружаем меню для выбранного ресторана
+      const items = getMenuItems(selectedRestaurant);
+      setMenuItems(items);
     }
-  }, [initialNavPosition]);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const now = Date.now();
-      
-      // Определяем направление скролла
-      if (currentScrollY > lastScrollY) {
-        setScrollDirection('down');
-      } else {
-        setScrollDirection('up');
-      }
-      
-      // Сохраняем текущую позицию скролла
-      setLastScrollY(currentScrollY);
-      
-      // Обработка фиксации навигационной панели категорий
-      if (categoryNavRef.current && initialNavPosition !== null) {
-        // Проверяем, находимся ли мы выше начальной позиции навигации
-        if (currentScrollY < initialNavPosition - 1) { // -1 для небольшого порога
-          // Если мы выше начальной позиции, убираем фиксацию
-          setIsNavSticky(false);
-        } else {
-          // Иначе применяем обычную логику фиксации
-          const navTop = categoryNavRef.current.getBoundingClientRect().top;
-          
-          if (scrollDirection === 'down') {
-            // При скролле вниз - фиксируем меню когда оно достигает верха экрана
-            setIsNavSticky(navTop <= 0);
-          } else {
-            // При скролле вверх - отпускаем меню только если мы еще не дошли до его исходной позиции
-            if (currentScrollY < initialNavPosition) {
-              setIsNavSticky(false);
-            }
-          }
-        }
-      }
-      
-      // Пропускаем определение активной категории, если это программный скролл после клика
-      // Проверяем, прошло ли достаточно времени с момента последнего клика (2 секунды)
-      if (isManualScroll || now - lastClickTime.current < 2000) {
-        return;
-      }
-      
-      // Если скорость скролла слишком высокая, пропускаем обновление категории
-      if (Math.abs(currentScrollY - lastScrollY) > 50) {
-        return;
-      }
-      
-      // Используем таймаут для обновления активной категории после скролла с debounce
-      if (scrollTimeoutId.current) {
-        clearTimeout(scrollTimeoutId.current);
-      }
-      
-      scrollTimeoutId.current = window.setTimeout(() => {
-        // Добавляем отступ для определения активной категории
-        const scrollPos = currentScrollY + 100;
-        
-        // Увеличиваем пороги переключения для более стабильного определения категории
-        // Определяем активную категорию на основе более жёстких порогов
-        const categoryPositions = [
-          { id: 'desserts', position: dessertsRef.current?.offsetTop || 0 },
-          { id: 'appetizers', position: appetizersRef.current?.offsetTop || 0 },
-          { id: 'main', position: mainCoursesRef.current?.offsetTop || 0 },
-          { id: 'popular', position: popularRef.current?.offsetTop || 0 }
-        ].filter(item => item.position > 0)
-         .sort((a, b) => b.position - a.position); // Сортируем от больших позиций к меньшим
-        
-        // Находим первую категорию, чья позиция меньше текущей позиции скролла с порогом
-        // Используем большой порог (70px), чтобы избежать частых переключений
-        const activeItem = categoryPositions.find(item => scrollPos >= (item.position - 70));
-        
-        // Устанавливаем активную категорию только если она найдена
-        if (activeItem) {
-          setActiveCategory(activeItem.id);
-        }
-      }, 200); // Больший таймаут для debounce (200мс)
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (scrollTimeoutId.current) {
-        clearTimeout(scrollTimeoutId.current);
-      }
-    };
-  }, [lastScrollY, scrollDirection, initialNavPosition, isManualScroll]);
-  
-  const scrollToCategory = (categoryId: string) => {
-    // Запоминаем время клика
-    lastClickTime.current = Date.now();
-    
-    // Устанавливаем флаг программного скролла
-    setIsManualScroll(true);
-    
-    // Устанавливаем активную категорию немедленно
-    setActiveCategory(categoryId);
-    
-    // Затем выполняем скроллинг
-    let element: HTMLDivElement | null = null;
-    switch(categoryId) {
-      case 'popular':
-        element = popularRef.current;
-        break;
-      case 'main':
-        element = mainCoursesRef.current;
-        break;
-      case 'appetizers':
-        element = appetizersRef.current;
-        break;
-      case 'desserts':
-        element = dessertsRef.current;
-        break;
-      default:
-        element = popularRef.current;
-    }
-    
-    if (element) {
-      // Используем requestAnimationFrame для плавной анимации
-      requestAnimationFrame(() => {
-        window.scrollTo({
-          top: element!.offsetTop - 70,
-          behavior: 'smooth'
-        });
-        
-        // Очищаем флаг программного скролла через значительное время
-        // Это предотвратит перерасчет активной категории на основе скролла сразу после клика
-        setTimeout(() => {
-          setIsManualScroll(false);
-        }, 2000); // Гораздо больший таймаут (2 секунды)
-      });
-    }
-  };
+  }, [selectedRestaurant]);
   
   const handleExploreMenu = () => {
     // Скрываем кнопку Telegram перед переходом на страницы выбора
@@ -415,22 +189,10 @@ const HomePage: React.FC = () => {
     }
   };
   
-  const popularItems = menuItems.filter(item => [1, 3, 5].includes(item.id));
-  const mainCourseItems = menuItems.filter(item => [1, 2, 3].includes(item.id));
-  const appetizerItems = menuItems.filter(item => [4, 5].includes(item.id));
-  const dessertItems = menuItems.filter(item => [6].includes(item.id));
-  
   const handleStartOver = () => {
     setSelectedRestaurant(null);
     navigate('/restaurant-selection');
   };
-  
-  const categories = [
-    { id: 'popular', name: 'Популярное', icon: '⭐' },
-    { id: 'main', name: 'Первое', icon: '🍛' },
-    { id: 'appetizers', name: 'Второе', icon: '🥣' },
-    { id: 'desserts', name: 'Десерты', icon: '🍮' }
-  ];
   
   return (
     <HomeContainer>
@@ -478,9 +240,9 @@ const HomePage: React.FC = () => {
               <Hero>
                 <HeroImage />
                 <HeroContent>
-                  <HeroTitle>{selectedRestaurant.name}</HeroTitle>
+                  <HeroTitle>{selectedRestaurantData?.name}</HeroTitle>
                   <HeroSubtitle>
-                    Насладитесь лучшей едой в {selectedCity.name}
+                    Насладитесь лучшей едой в {selectedCity?.name || ''}
                   </HeroSubtitle>
                   <HeroButton onClick={handleStartOver}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -491,102 +253,14 @@ const HomePage: React.FC = () => {
                 </HeroContent>
               </Hero>
               
-              <CategoryNav ref={categoryNavRef} $isSticky={isNavSticky}>
-                {categories.map(category => (
-                  <CategoryButton
-                    key={category.id}
-                    $active={activeCategory === category.id}
-                    onClick={() => scrollToCategory(category.id)}
-                  >
-                    <span>{category.icon}</span> {category.name}
-                  </CategoryButton>
-                ))}
-              </CategoryNav>
+              <RestaurantInfo>
+                <RestaurantName>{selectedRestaurantData?.name}</RestaurantName>
+                <RestaurantAdditionalInfo>
+                  {selectedCity?.name}, {selectedRestaurantData?.address}
+                </RestaurantAdditionalInfo>
+              </RestaurantInfo>
               
-              <StickyNavPlaceholder $isVisible={isNavSticky} />
-              
-              <PopularFoodsContainer ref={popularRef}>
-                <CategoryTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                  </svg>
-                  Популярные блюда
-                </CategoryTitle>
-                <FoodGrid>
-                  {popularItems.map(item => (
-                    <FoodItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  ))}
-                </FoodGrid>
-              </PopularFoodsContainer>
-              
-              <CategoryContainer ref={mainCoursesRef}>
-                <CategoryTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15.42 15.71l5.38 5.38a1 1 0 0 0 1.41 0l1.88-1.88a1 1 0 0 0 0-1.41l-5.38-5.38"></path>
-                  </svg>
-                  Первое
-                </CategoryTitle>
-                <FoodGrid>
-                  {mainCourseItems.map(item => (
-                    <FoodItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  ))}
-                </FoodGrid>
-              </CategoryContainer>
-              
-              <CategoryContainer ref={appetizersRef}>
-                <CategoryTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
-                    <line x1="6" y1="17" x2="18" y2="17"></line>
-                  </svg>
-                  Второе
-                </CategoryTitle>
-                <FoodGrid>
-                  {appetizerItems.map(item => (
-                    <FoodItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  ))}
-                </FoodGrid>
-              </CategoryContainer>
-              
-              <CategoryContainer ref={dessertsRef}>
-                <CategoryTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 21a9 9 0 0 1-9-9c0-3.9 2.5-7.2 6-8.5 0 1.5.5 3 1.5 4 .8.8 1.8 1.2 2.8 1.5.8.2 1.7.3 2.7.3a8 8 0 0 0 3.3-.7"></path>
-                    <path d="M12 12a9 9 0 0 0 9 9c3.9 0 7.2-2.5 8.5-6-1.5 0-3-.5-4-1.5-.8-.8-1.2-1.8-1.5-2.8-.2-.8-.3-1.7-.3-2.7a8 8 0 0 1 .7-3.3"></path>
-                    <path d="M21 12h-2c0-4.4-3.6-8-8-8v-2c5.5 0 10 4.5 10 10z"></path>
-                  </svg>
-                  Десерты
-                </CategoryTitle>
-                <FoodGrid>
-                  {dessertItems.map(item => (
-                    <FoodItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  ))}
-                </FoodGrid>
-              </CategoryContainer>
+              <RestaurantMenu menuItems={menuItems} />
             </>
           )}
         </MainContent>

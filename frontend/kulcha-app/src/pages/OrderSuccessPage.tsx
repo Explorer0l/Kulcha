@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import Navigation from '../components/Navigation';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
+import { addOrder } from '../data/adminDatabase';
 
 const SuccessContainer = styled(PageTransition)`
   min-height: 70vh;
@@ -223,18 +224,112 @@ const OrderListButton = styled(Button)`
 const OrderSuccessPage: React.FC = () => {
   const { orderHistory } = useAppContext();
   const navigate = useNavigate();
-  const { showBackButton, hideBackButton, setBackButtonCallback } = useTelegram();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { showBackButton, hideBackButton } = useTelegram();
   
   // Получаем последний заказ
-  const lastOrder = orderHistory.length > 0 ? orderHistory[0] : null;
+  const lastOrder = orderHistory.length > 0 ? orderHistory[orderHistory.length - 1] : null;
   
   useEffect(() => {
     hideBackButton();
     
     // Если нет заказа, перенаправляем на главную
     if (!lastOrder) {
+      console.log('No order found in history, redirecting to home');
       navigate('/');
+      return;
     }
+    
+    console.log('Last order found:', lastOrder.id, 'for restaurant:', lastOrder.restaurantId);
+    
+    // Синхронизируем заказ с админ-панелью
+    const syncOrderWithAdmin = () => {
+      if (lastOrder && lastOrder.restaurantId) {
+        const customerName = lastOrder.userAddress ? lastOrder.userAddress.name : 'Гость';
+        
+        console.log('Synchronizing order with admin panel', {
+          orderId: lastOrder.id,
+          restaurantId: lastOrder.restaurantId,
+          customer: customerName,
+          amount: lastOrder.totalAmount,
+          items: lastOrder.items.length
+        });
+        
+        try {
+          // Получаем текущие заказы в админ-панели
+          const adminOrdersStr = localStorage.getItem('adminOrders');
+          let existingOrders: any[] = [];
+          
+          if (adminOrdersStr) {
+            try {
+              existingOrders = JSON.parse(adminOrdersStr);
+              console.log('Current admin orders:', existingOrders.length);
+            } catch (parseError) {
+              console.error('Error parsing adminOrders:', parseError);
+            }
+          }
+          
+          // Проверяем, не существует ли уже заказ для этого клиентского заказа
+          // Проверяем примерно по времени создания
+          const dateToCheck = new Date(lastOrder.date);
+          const orderExists = existingOrders.some((order: any) => {
+            try {
+              const orderDate = new Date(order.date);
+              const timeDiff = Math.abs(orderDate.getTime() - dateToCheck.getTime());
+              // Если разница менее 5 минут и суммы совпадают, считаем это одним и тем же заказом
+              return (timeDiff < 300000) && 
+                    order.amount === lastOrder.totalAmount && 
+                    order.restaurantId === lastOrder.restaurantId;
+            } catch (err) {
+              console.error('Error checking order existence:', err);
+              return false;
+            }
+          });
+          
+          if (orderExists) {
+            console.log('Order already exists in admin panel, skipping creation');
+          } else {
+            // Добавляем заказ в админ-панель владельца ресторана
+            const adminOrder = addOrder({
+              restaurantId: lastOrder.restaurantId,
+              customer: customerName,
+              date: lastOrder.date,
+              amount: lastOrder.totalAmount,
+              status: 'pending' // Начальный статус заказа
+            });
+            
+            if (adminOrder && adminOrder.id > 0) {
+              console.log('Order successfully synchronized with admin panel, ID:', adminOrder.id);
+            } else {
+              console.warn('Order was created but may not have been properly synchronized');
+            }
+          }
+        } catch (error) {
+          console.error('Error synchronizing order with admin panel:', error);
+          
+          // Повторная попытка с задержкой
+          setTimeout(() => {
+            try {
+              addOrder({
+                restaurantId: lastOrder.restaurantId,
+                customer: customerName,
+                date: lastOrder.date,
+                amount: lastOrder.totalAmount,
+                status: 'pending'
+              });
+              console.log('Retry: Order synchronized with admin panel');
+            } catch (retryError) {
+              console.error('Retry failed:', retryError);
+            }
+          }, 2000);
+        }
+      } else {
+        console.warn('Cannot synchronize order: missing restaurantId', lastOrder);
+      }
+    };
+    
+    // Выполняем синхронизацию
+    syncOrderWithAdmin();
     
     return () => {
       showBackButton();
@@ -242,30 +337,40 @@ const OrderSuccessPage: React.FC = () => {
   }, [hideBackButton, lastOrder, navigate, showBackButton]);
   
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
   };
   
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'Ожидает подтверждения';
-      case 'confirmed':
-        return 'Подтвержден';
-      case 'preparing':
-        return 'Готовится';
-      case 'ready':
-        return 'Готов к выдаче';
-      case 'delivered':
-        return 'Доставлен';
-      default:
-        return 'В обработке';
+    try {
+      switch (status) {
+        case 'pending':
+          return 'Ожидает подтверждения';
+        case 'confirmed':
+          return 'Подтвержден';
+        case 'preparing':
+          return 'Готовится';
+        case 'ready':
+          return 'Готов к выдаче';
+        case 'delivered':
+          return 'Доставлен';
+        default:
+          return 'В обработке';
+      }
+    } catch (error) {
+      console.error('Error getting status label:', error);
+      return 'В обработке';
     }
   };
   

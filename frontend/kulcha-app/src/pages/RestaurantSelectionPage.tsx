@@ -16,6 +16,7 @@ import CartButton from '../components/CartButton';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import styled from 'styled-components';
+import { mockRestaurants } from '../data/mockData';
 
 const RestaurantCard = styled.div`
   background-color: var(--card-bg);
@@ -157,7 +158,6 @@ const placeholderImages = [
 const RestaurantSelectionPage: React.FC = () => {
   const navigate = useNavigate();
   const { 
-    restaurants, 
     selectedCity, 
     setSelectedRestaurant 
   } = useAppContext();
@@ -170,6 +170,9 @@ const RestaurantSelectionPage: React.FC = () => {
     hideMainButton,
     setBackButtonCallback
   } = useTelegram();
+
+  // Используем mockRestaurants напрямую, чтобы быть уверенными, что у нас есть данные
+  const restaurants = mockRestaurants;
 
   const filteredRestaurants = useMemo(() => {
     if (!selectedCity) return [];
@@ -209,10 +212,17 @@ const RestaurantSelectionPage: React.FC = () => {
   }, [hideBackButton, navigate, setBackButtonCallback, showBackButton, hideMainButton]);
 
   const handleRestaurantSelect = (restaurantId: number) => {
+    console.log(`Selecting restaurant ID: ${restaurantId} and navigating to /home`);
     const restaurant = restaurants.find(r => r.id === restaurantId);
     if (restaurant) {
-      setSelectedRestaurant(restaurant);
-      navigate('/');
+      // Сначала сохраняем выбранный ресторан в состоянии
+      setSelectedRestaurant(restaurantId);
+      
+      // Затем задерживаем перенаправление на миллисекунду, чтобы состояние успело обновиться
+      setTimeout(() => {
+        // Явное перенаправление на домашнюю страницу
+        navigate('/home', { replace: true });
+      }, 10);
     }
   };
 
