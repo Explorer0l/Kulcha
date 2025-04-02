@@ -9,6 +9,7 @@ const Navigation: React.FC = () => {
   const { 
     selectedCity, 
     selectedRestaurant, 
+    restaurants,
     deliveryMethod, 
     setDeliveryMethod 
   } = useAppContext();
@@ -32,7 +33,13 @@ const Navigation: React.FC = () => {
 
   const handleRestaurantClick = () => {
     if (selectedCity) {
-      navigate('/restaurant-selection');
+      if (selectedRestaurant) {
+        // Если ресторан уже выбран, перейти на страницу с меню
+        navigate('/home');
+      } else {
+        // Если ресторан не выбран, перейти на страницу выбора ресторана
+        navigate('/restaurant-selection');
+      }
     }
   };
 
@@ -43,6 +50,11 @@ const Navigation: React.FC = () => {
   const handlePickupClick = () => {
     setDeliveryMethod('pickup');
   };
+
+  // Получаем информацию о выбранном ресторане
+  const restaurant = selectedRestaurant !== null 
+    ? restaurants.find(r => r.id === selectedRestaurant) 
+    : null;
 
   return (
     <NavBar>
@@ -67,7 +79,7 @@ const Navigation: React.FC = () => {
           <path d="M14 11V6c0-2.8-2.2-5-5-5S4 3.2 4 6v5"></path>
           <path d="M21 11v9c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1v-9c0-.6.4-1 1-1h2c.6 0 1 .4 1 1Z"></path>
         </svg>
-        {selectedRestaurant ? selectedRestaurant.name : 'Restaurant'}
+        {restaurant ? restaurant.name : 'Restaurant'}
       </NavButton>
       
       <NavButton 

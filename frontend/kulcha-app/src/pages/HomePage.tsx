@@ -1,20 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { 
   Container, 
   MainContent,
-  Heading,
-  FoodGrid,
   EmptyState,
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
-import FoodItem from '../components/FoodItem';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import CartButton from '../components/CartButton';
+import { getMenuItems } from '../data/adminDatabase';
+import RestaurantMenu from './RestaurantMenu';
 
 const HomeContainer = styled(PageTransition)`
   min-height: 70vh;
@@ -125,23 +124,18 @@ const HeroButton = styled.button`
   }
 `;
 
-const CategoryTitle = styled(Heading)`
-  display: flex;
-  align-items: center;
-  margin-top: var(--spacing-xl);
-  
-  svg {
-    margin-right: var(--spacing-sm);
-    color: var(--primary-color);
-  }
+const RestaurantInfo = styled.div`
+  margin-bottom: var(--spacing-lg);
 `;
 
-const PopularFoodsContainer = styled.div`
-  margin-bottom: var(--spacing-xl);
+const RestaurantName = styled.h2`
+  color: var(--text-color);
+  margin: 0 0 var(--spacing-xs) 0;
 `;
 
-const CategoryContainer = styled.div`
-  margin-bottom: var(--spacing-xl);
+const RestaurantAdditionalInfo = styled.p`
+  color: var(--text-secondary);
+  margin: 0;
 `;
 
 const HomePage: React.FC = () => {
@@ -149,28 +143,51 @@ const HomePage: React.FC = () => {
   const { 
     selectedCity, 
     selectedRestaurant, 
-    menuItems,
-    setSelectedCity,
-    setSelectedRestaurant 
+    setSelectedRestaurant,
+    restaurants
   } = useAppContext();
   const { hideBackButton, hideMainButton } = useTelegram();
+  
+  // Используем меню из adminDatabase вместо mockData
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  
+  // Получаем данные о выбранном ресторане и city из контекста
+  const selectedRestaurantData = selectedRestaurant 
+    ? restaurants.find(r => r.id === selectedRestaurant) 
+    : null;
   
   useEffect(() => {
     hideBackButton();
     hideMainButton();
-  }, [hideBackButton, hideMainButton]);
+
+    // Проверяем выбран ли город и ресторан
+    if (!selectedCity) {
+      // Если город не выбран, перенаправляем на выбор города
+      navigate('/city-selection', { replace: true });
+    } else if (!selectedRestaurant) {
+      // Если город выбран, но ресторан нет, перенаправляем на выбор ресторана
+      navigate('/restaurant-selection', { replace: true });
+    }
+  }, [hideBackButton, hideMainButton, selectedCity, selectedRestaurant, navigate]);
+  
+  useEffect(() => {
+    if (selectedRestaurant) {
+      // Загружаем меню для выбранного ресторана
+      const items = getMenuItems(selectedRestaurant);
+      setMenuItems(items);
+    }
+  }, [selectedRestaurant]);
   
   const handleExploreMenu = () => {
+    // Скрываем кнопку Telegram перед переходом на страницы выбора
+    hideMainButton();
+    
     if (!selectedCity) {
       navigate('/city-selection');
     } else if (!selectedRestaurant) {
       navigate('/restaurant-selection');
     }
   };
-  
-  const popularItems = menuItems.filter(item => [1, 3, 5].includes(item.id));
-  const mainCourseItems = menuItems.filter(item => [1, 2, 3].includes(item.id));
-  const appetizerItems = menuItems.filter(item => [4, 5, 6].includes(item.id));
   
   const handleStartOver = () => {
     setSelectedRestaurant(null);
@@ -223,9 +240,9 @@ const HomePage: React.FC = () => {
               <Hero>
                 <HeroImage />
                 <HeroContent>
-                  <HeroTitle>{selectedRestaurant.name}</HeroTitle>
+                  <HeroTitle>{selectedRestaurantData?.name}</HeroTitle>
                   <HeroSubtitle>
-                    Насладитесь лучшей едой в {selectedCity.name}
+                    Насладитесь лучшей едой в {selectedCity?.name || ''}
                   </HeroSubtitle>
                   <HeroButton onClick={handleStartOver}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -236,66 +253,14 @@ const HomePage: React.FC = () => {
                 </HeroContent>
               </Hero>
               
-              <PopularFoodsContainer>
-                <CategoryTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                  </svg>
-                  Популярные блюда
-                </CategoryTitle>
-                <FoodGrid>
-                  {popularItems.map(item => (
-                    <FoodItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  ))}
-                </FoodGrid>
-              </PopularFoodsContainer>
+              <RestaurantInfo>
+                <RestaurantName>{selectedRestaurantData?.name}</RestaurantName>
+                <RestaurantAdditionalInfo>
+                  {selectedCity?.name}, {selectedRestaurantData?.address}
+                </RestaurantAdditionalInfo>
+              </RestaurantInfo>
               
-              <CategoryContainer>
-                <CategoryTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15.42 15.71l5.38 5.38a1 1 0 0 0 1.41 0l1.88-1.88a1 1 0 0 0 0-1.41l-5.38-5.38"></path>
-                  </svg>
-                  Основные блюда
-                </CategoryTitle>
-                <FoodGrid>
-                  {mainCourseItems.map(item => (
-                    <FoodItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  ))}
-                </FoodGrid>
-              </CategoryContainer>
-              
-              <CategoryContainer>
-                <CategoryTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
-                    <line x1="6" y1="17" x2="18" y2="17"></line>
-                  </svg>
-                  Закуски
-                </CategoryTitle>
-                <FoodGrid>
-                  {appetizerItems.map(item => (
-                    <FoodItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      description={item.description}
-                      price={item.price}
-                    />
-                  ))}
-                </FoodGrid>
-              </CategoryContainer>
+              <RestaurantMenu menuItems={menuItems} />
             </>
           )}
         </MainContent>
