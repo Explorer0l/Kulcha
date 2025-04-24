@@ -1,0 +1,263 @@
+[
+  {
+    "model": "cafes.city",
+    "pk": 1,
+    "fields": {
+      "name": "Москва",
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.city",
+    "pk": 2,
+    "fields": {
+      "name": "Санкт-Петербург",
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.city",
+    "pk": 3,
+    "fields": {
+      "name": "Новосибирск",
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.city",
+    "pk": 4,
+    "fields": {
+      "name": "Екатеринбург",
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.city",
+    "pk": 5,
+    "fields": {
+      "name": "Казань",
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.cafe",
+    "pk": 1,
+    "fields": {
+      "name": "Kulcha Центральный",
+      "city": 1,
+      "address": "ул. Тверская, 5",
+      "description": "Лучший индийский ресторан в центре Москвы",
+      "cover_image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+      "rating": 4.8,
+      "total_orders": 0,
+      "total_revenue": 0,
+      "net_profit": 0,
+      "average_order_value": 0,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.cafe",
+    "pk": 2,
+    "fields": {
+      "name": "Kulcha Экспресс",
+      "city": 1,
+      "address": "Кутузовский проспект, 32",
+      "description": "Быстрая доставка вкусной индийской еды",
+      "cover_image": "https://images.unsplash.com/photo-1514933651103-005eec06c04b",
+      "rating": 4.5,
+      "total_orders": 0,
+      "total_revenue": 0,
+      "net_profit": 0,
+      "average_order_value": 0,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.cafe",
+    "pk": 3,
+    "fields": {
+      "name": "Kulcha Премиум",
+      "city": 2,
+      "address": "Невский проспект, 28",
+      "description": "Изысканные блюда в историческом центре",
+      "cover_image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+      "rating": 4.9,
+      "total_orders": 0,
+      "total_revenue": 0,
+      "net_profit": 0,
+      "average_order_value": 0,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.cafe",
+    "pk": 4,
+    "fields": {
+      "name": "Kulcha Фэмили",
+      "city": 2,
+      "address": "ул. Рубинштейна, 15",
+      "description": "Семейный ресторан с детским меню",
+      "cover_image": "https://images.unsplash.com/photo-1552566626-52f8b828add9",
+      "rating": 4.6,
+      "total_orders": 0,
+      "total_revenue": 0,
+      "net_profit": 0,
+      "average_order_value": 0,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.cafe",
+    "pk": 5,
+    "fields": {
+      "name": "Kulcha Восточный",
+      "city": 3,
+      "address": "ул. Ленина, 10",
+      "description": "Аутентичная индийская кухня",
+      "cover_image": "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17",
+      "rating": 4.7,
+      "total_orders": 0,
+      "total_revenue": 0,
+      "net_profit": 0,
+      "average_order_value": 0,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.cafe",
+    "pk": 6,
+    "fields": {
+      "name": "Kulcha Гурмэ",
+      "city": 4,
+      "address": "ул. Вайнера, 9",
+      "description": "Гастрономические шедевры индийской кухни",
+      "cover_image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0",
+      "rating": 4.9,
+      "total_orders": 0,
+      "total_revenue": 0,
+      "net_profit": 0,
+      "average_order_value": 0,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.cafe",
+    "pk": 7,
+    "fields": {
+      "name": "Kulcha Традиции",
+      "city": 5,
+      "address": "ул. Баумана, 31",
+      "description": "Традиционная кухня в современном исполнении",
+      "cover_image": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9",
+      "rating": 4.7,
+      "total_orders": 0,
+      "total_revenue": 0,
+      "net_profit": 0,
+      "average_order_value": 0,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.menuitem",
+    "pk": 1,
+    "fields": {
+      "cafe": 1,
+      "name": "Баттер Чикен",
+      "description": "Нежная курица в богатом сливочно-томатном соусе с маслом и ароматными специями.",
+      "price": "450.00",
+      "category": "main",
+      "image_url": "",
+      "available": true,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.menuitem",
+    "pk": 2,
+    "fields": {
+      "cafe": 1,
+      "name": "Панир Тикка",
+      "description": "Кубики домашнего сыра, маринованные в специях и обжаренные до совершенства.",
+      "price": "350.00",
+      "category": "appetizers",
+      "image_url": "",
+      "available": true,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.menuitem",
+    "pk": 3,
+    "fields": {
+      "cafe": 1,
+      "name": "Чикен Бирьяни",
+      "description": "Ароматный рис басмати, приготовленный с нежной курицей и пряными специями.",
+      "price": "420.00",
+      "category": "main",
+      "image_url": "",
+      "available": true,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.menuitem",
+    "pk": 4,
+    "fields": {
+      "cafe": 1,
+      "name": "Самоса",
+      "description": "Хрустящие пирожки с начинкой из пряного картофеля и гороха.",
+      "price": "120.00",
+      "category": "appetizers",
+      "image_url": "",
+      "available": true,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.menuitem",
+    "pk": 5,
+    "fields": {
+      "cafe": 1,
+      "name": "Чесночный Наан",
+      "description": "Мягкая лепешка с чесноком и маслом, запеченная в тандыре.",
+      "price": "80.00",
+      "category": "appetizers",
+      "image_url": "",
+      "available": true,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "cafes.menuitem",
+    "pk": 6,
+    "fields": {
+      "cafe": 1,
+      "name": "Гулаб Джамун",
+      "description": "Сладкие шарики из молока, пропитанные сахарным сиропом с кардамоном и розовой водой.",
+      "price": "150.00",
+      "category": "desserts",
+      "image_url": "",
+      "available": true,
+      "created_at": "2024-03-30T00:00:00Z",
+      "updated_at": "2024-03-30T00:00:00Z"
+    }
+  }
+] 
