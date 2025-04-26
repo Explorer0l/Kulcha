@@ -87,11 +87,20 @@ export interface RestaurantStatistics {
 }
 
 // API URL
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
-// Функция для обработки ошибок
+// Функция для обработки ошибок с улучшенным логированием
 const handleError = (error: any, fallback: any = null) => {
-  console.error(error);
+  if (error.message) {
+    console.error('API Error:', error.message);
+  }
+  
+  if (error.response) {
+    console.error('API Response Status:', error.response.status);
+    console.error('API Response Data:', error.response.data);
+  }
+  
+  console.error('Full Error:', error);
   return fallback;
 };
 
@@ -103,25 +112,38 @@ export const initializeAdminDatabase = async () => {
 // Получение элементов меню по ID ресторана
 export const getMenuItems = async (restaurantId: number): Promise<MenuItem[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/menu-items/?cafe=${restaurantId}`);
+    console.log(`Fetching menu items for restaurant ID: ${restaurantId}`);
+    
+    const response = await fetch(`${API_BASE_URL}/menu-items/?cafe=${restaurantId}`, {
+      credentials: 'include',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
     if (!response.ok) {
-      throw new Error(`Error fetching menu items: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`Error fetching menu items: ${response.status}`, errorText);
+      throw new Error(`Error fetching menu items: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('Menu items data:', data);
     
     // Преобразуем данные в формат, используемый на фронтенде
     return data.map((item: any) => ({
       id: item.id,
       restaurantId: item.cafe,
-        name: item.name,
+      name: item.name,
       description: item.description || '',
-        price: item.price,
+      price: item.price,
       category: item.category,
       imageUrl: item.image || item.image_url || '',
       available: item.available
     }));
   } catch (error) {
+    console.error('Error in getMenuItems:', error);
     return handleError(error, []);
   }
 };
@@ -129,62 +151,57 @@ export const getMenuItems = async (restaurantId: number): Promise<MenuItem[]> =>
 // Получение статистики по ресторану
 export const getRestaurantStatistics = async (restaurantId: number): Promise<RestaurantStatistics> => {
   try {
+    console.log(`Fetching statistics for restaurant ID: ${restaurantId}`);
+    
     // Получаем статистику ресторана
     const response = await fetch(`${API_BASE_URL}/cafes/${restaurantId}/statistics/`, {
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
     });
     
     if (!response.ok) {
-      throw new Error(`Error fetching restaurant statistics: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`Error fetching restaurant statistics: ${response.status}`, errorText);
+      throw new Error(`Error fetching restaurant statistics: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('Restaurant statistics data:', data);
     
     // Получаем последние заказы для ресторана
     const ordersResponse = await fetch(`${API_BASE_URL}/orders/?cafe=${restaurantId}`, {
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
     });
     
     if (!ordersResponse.ok) {
-      throw new Error(`Error fetching restaurant orders: ${ordersResponse.status}`);
+      const errorText = await ordersResponse.text();
+      console.error(`Error fetching restaurant orders: ${ordersResponse.status}`, errorText);
+      throw new Error(`Error fetching restaurant orders: ${ordersResponse.status} - ${errorText}`);
     }
     
     const ordersData = await ordersResponse.json();
+    console.log('Restaurant orders data:', ordersData);
     
-    const transformedOrders = await Promise.all(ordersData.map(async (order: any) => {
-      // Получаем детали заказа (элементы заказа)
-      const orderItemsResponse = await fetch(`${API_BASE_URL}/order-items/?order=${order.id}`);
-      const orderItems = await orderItemsResponse.json();
-      
-      // Получаем детали каждого элемента меню
-      const items = await Promise.all(orderItems.map(async (item: any) => {
-        const menuItemResponse = await fetch(`${API_BASE_URL}/menu-items/${item.menu_item}/`);
-        const menuItem = await menuItemResponse.json();
-        
-        return {
-          ...menuItem,
-          id: menuItem.id,
-          restaurantId: menuItem.cafe,
-          name: menuItem.name,
-          description: menuItem.description || '',
-          price: menuItem.price,
-          category: menuItem.category,
-          imageUrl: menuItem.image_url || '',
-          quantity: item.quantity
-        };
-      }));
-      
+    // Упрощаем процесс получения данных заказа для улучшения производительности
+    const transformedOrders = ordersData.map((order: any) => {
       return {
         id: order.id,
-        items,
+        items: order.items || [],
         totalAmount: order.total_price,
         deliveryMethod: order.order_type === 'delivery' ? 'delivery' : 'pickup',
         date: order.created_at,
         status: order.status,
         restaurantId: order.cafe,
-        userAddress: order.delivery_address
+        userAddress: order.delivery_address || ''
       };
-    }));
+    });
     
     return {
       statistics: {
@@ -205,6 +222,7 @@ export const getRestaurantStatistics = async (restaurantId: number): Promise<Res
       recentOrders: transformedOrders.slice(0, 5) // Берем только 5 последних заказов
     };
   } catch (error) {
+    console.error('Error in getRestaurantStatistics:', error);
     return handleError(error, {
       statistics: {
         totalSales: 0,
@@ -221,28 +239,59 @@ export const getRestaurantStatistics = async (restaurantId: number): Promise<Res
 export const authenticateOwner = async (email: string, password: string): Promise<RestaurantOwner | null> => {
   try {
     // Здесь в реальном приложении должен быть запрос на аутентификацию к API
-    const response = await fetch(`${API_BASE_URL}/auth/login/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include'
-    });
+    // Пока используем временное решение с предопределенными учетными записями
+    console.log('Authenticating owner:', email, password);
     
-    if (!response.ok) {
-      throw new Error(`Authentication failed: ${response.status}`);
+    // Проверяем данные для входа
+    const validCredentials = [
+      { email: 'central@kulcha.ru', password: 'kulcha2024', restaurantId: 1, name: 'Администратор Центральный' },
+      { email: 'express@kulcha.ru', password: 'kulcha2024', restaurantId: 2, name: 'Администратор Экспресс' },
+      { email: 'premium@kulcha.ru', password: 'kulcha2024', restaurantId: 3, name: 'Администратор Премиум' },
+      { email: 'family@kulcha.ru', password: 'kulcha2024', restaurantId: 4, name: 'Администратор Фэмили' },
+      { email: 'east@kulcha.ru', password: 'kulcha2024', restaurantId: 5, name: 'Администратор Восточный' },
+      { email: 'gourmet@kulcha.ru', password: 'kulcha2024', restaurantId: 6, name: 'Администратор Гурмэ' },
+      { email: 'tradition@kulcha.ru', password: 'kulcha2024', restaurantId: 7, name: 'Администратор Традиции' }
+    ];
+    
+    const user = validCredentials.find(cred => cred.email === email && cred.password === password);
+    
+    if (user) {
+      // Имитируем успешный ответ от сервера
+      return {
+        id: user.restaurantId,
+        email: user.email,
+        password: '', // Для безопасности не храним пароль на клиенте
+        name: user.name,
+        restaurantId: user.restaurantId
+      };
     }
     
-    const data = await response.json();
+    // Пытаемся сделать запрос к API (если сервер доступен)
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          id: data.id,
+          email: data.email,
+          password: '', // Пароль не храним на клиенте
+          name: data.name,
+          restaurantId: data.cafe_id
+        };
+      }
+    } catch (apiError) {
+      console.error('API auth failed, using mock auth:', apiError);
+    }
     
-    return {
-      id: data.id,
-      email: data.email,
-      password: '', // Пароль не храним на клиенте
-      name: data.name,
-      restaurantId: data.cafe_id
-    };
+    return null;
   } catch (error) {
     return handleError(error, null);
   }
@@ -251,19 +300,33 @@ export const authenticateOwner = async (email: string, password: string): Promis
 // Получение данных ресторана
 export const getRestaurantData = async (restaurantId: number): Promise<RestaurantAdminData | null> => {
   try {
+    console.log(`Fetching restaurant data for ID: ${restaurantId}`);
+    
     const response = await fetch(`${API_BASE_URL}/cafes/${restaurantId}/`, {
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
     });
     
     if (!response.ok) {
-      throw new Error(`Error fetching restaurant data: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`Error fetching restaurant data: ${response.status}`, errorText);
+      throw new Error(`Error fetching restaurant data: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('Restaurant data received:', data);
     
     // Получаем статистику ресторана для дополнительных данных
+    console.log(`Fetching restaurant statistics for ID: ${restaurantId}`);
     const statsResponse = await fetch(`${API_BASE_URL}/cafes/${restaurantId}/statistics/`, {
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
     });
     
     let stats = { 
@@ -274,9 +337,13 @@ export const getRestaurantData = async (restaurantId: number): Promise<Restauran
     
     if (statsResponse.ok) {
       stats = await statsResponse.json();
+      console.log('Restaurant statistics received:', stats);
+    } else {
+      const errorText = await statsResponse.text();
+      console.warn(`Warning: Could not fetch restaurant statistics: ${statsResponse.status}`, errorText);
     }
     
-    return {
+    const restaurantData = {
       id: data.id,
       name: data.name,
       address: data.address,
@@ -289,7 +356,11 @@ export const getRestaurantData = async (restaurantId: number): Promise<Restauran
       netProfit: (stats.total_revenue * 0.3) || 0, // Примерная прибыль 30% от выручки
       averageOrderValue: stats.average_order_value || 0
     };
+    
+    console.log('Transformed restaurant data:', restaurantData);
+    return restaurantData;
   } catch (error) {
+    console.error('Error in getRestaurantData:', error);
     return handleError(error, null);
   }
 };
@@ -346,16 +417,25 @@ export const getAllRestaurants = async (): Promise<RestaurantAdminData[]> => {
 // Получение заказов для ресторана
 export const getRestaurantOrders = async (restaurantId: number): Promise<AdminOrder[]> => {
   try {
+    console.log(`Fetching orders for restaurant ID: ${restaurantId}`);
+    
     // Получаем заказы для конкретного ресторана
     const response = await fetch(`${API_BASE_URL}/orders/?cafe=${restaurantId}`, {
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
     });
     
     if (!response.ok) {
-      throw new Error(`Error fetching restaurant orders: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`Error fetching restaurant orders: ${response.status}`, errorText);
+      throw new Error(`Error fetching restaurant orders: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('Restaurant orders data:', data);
     
     // Преобразуем данные в формат, используемый на фронтенде
     return data.map((order: any) => ({
@@ -367,6 +447,7 @@ export const getRestaurantOrders = async (restaurantId: number): Promise<AdminOr
       status: order.status
     }));
   } catch (error) {
+    console.error('Error in getRestaurantOrders:', error);
     return handleError(error, []);
   }
 };
@@ -446,20 +527,27 @@ export const updateMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
       available: menuItem.available
     };
     
+    console.log('Updating menu item:', menuItem.id, apiData);
+    
     const response = await fetch(`${API_BASE_URL}/menu-items/${menuItem.id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify(apiData),
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors'
     });
     
     if (!response.ok) {
-      throw new Error(`Error updating menu item: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Error updating menu item:', response.status, errorText);
+      throw new Error(`Error updating menu item: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('Menu item updated successfully:', data);
     
     // Возвращаем обновленный пункт меню в формате, используемом на фронтенде
     return {
@@ -491,20 +579,27 @@ export const createMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
       available: menuItem.available !== undefined ? menuItem.available : true
     };
     
+    console.log('Creating new menu item:', apiData);
+    
     const response = await fetch(`${API_BASE_URL}/menu-items/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify(apiData),
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors'
     });
     
     if (!response.ok) {
-      throw new Error(`Error creating menu item: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Error creating menu item:', response.status, errorText);
+      throw new Error(`Error creating menu item: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('Menu item created successfully:', data);
     
     // Возвращаем новый пункт меню в формате, используемом на фронтенде
     return {
@@ -525,13 +620,27 @@ export const createMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
 // Удаление пункта меню
 export const deleteMenuItem = async (itemId: number): Promise<boolean> => {
   try {
+    console.log(`Deleting menu item with ID: ${itemId}`);
+    
     const response = await fetch(`${API_BASE_URL}/menu-items/${itemId}/`, {
       method: 'DELETE',
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+      }
     });
     
-    return response.ok;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Error deleting menu item: ${response.status}`, errorText);
+      throw new Error(`Error deleting menu item: ${response.status} - ${errorText}`);
+    }
+    
+    console.log(`Menu item ${itemId} deleted successfully`);
+    return true;
   } catch (error) {
+    console.error('Error in deleteMenuItem:', error);
     return handleError(error, false);
   }
 };

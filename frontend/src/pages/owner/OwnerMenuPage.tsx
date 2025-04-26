@@ -901,10 +901,16 @@ const OwnerMenuPage: React.FC = () => {
     try {
       if (currentItem.id) {
         // Обновляем существующее блюдо
+        console.log('Updating existing menu item:', currentItem);
         const updatedItem = await updateMenuItem(currentItem as MenuItem);
-        setMenuItems(prev => prev.map(item => 
-          item.id === updatedItem.id ? updatedItem : item
-        ));
+        console.log('Item updated successfully:', updatedItem);
+        
+        if (updatedItem) {
+          setMenuItems(prev => prev.map(item => 
+            item.id === updatedItem.id ? updatedItem : item
+          ));
+          alert('Блюдо успешно обновлено!');
+        }
       } else {
         // Создаем новое блюдо
         const newItemData = {
@@ -913,14 +919,23 @@ const OwnerMenuPage: React.FC = () => {
           restaurantId: restaurantId
         } as MenuItem;
         
+        console.log('Creating new menu item:', newItemData);
         const newItem = await createMenuItem(newItemData);
-        setMenuItems(prev => [...prev, newItem]);
+        console.log('Item created successfully:', newItem);
+        
+        if (newItem && newItem.id > 0) {
+          setMenuItems(prev => [...prev, newItem]);
+          alert('Новое блюдо успешно добавлено!');
+        } else {
+          console.error('Failed to create menu item - invalid ID returned:', newItem);
+          alert('Ошибка при создании блюда. Пожалуйста, попробуйте снова.');
+        }
       }
       
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Ошибка при сохранении блюда:', error);
-      alert('Произошла ошибка при сохранении блюда');
+      console.error('Error while saving menu item:', error);
+      alert(`Произошла ошибка при сохранении блюда: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     }
   };
 

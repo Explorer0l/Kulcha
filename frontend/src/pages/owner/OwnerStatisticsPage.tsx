@@ -1063,17 +1063,23 @@ const OwnerStatisticsPage: React.FC = () => {
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser) as UserInfo;
+        console.log('User info:', parsedUser);
         
         // Получаем актуальные данные ресторана
+        console.log('Fetching restaurant data for ID:', parsedUser.restaurantId);
         const restaurant = await getRestaurantData(parsedUser.restaurantId);
         if (restaurant) {
           console.log('Refreshed restaurant data:', restaurant);
           setRestaurantData(restaurant);
           setRestaurantRevenue(restaurant.totalRevenue || 0);
           setOrderCount(restaurant.totalOrders || 0);
+        } else {
+          console.error('Failed to fetch restaurant data - null returned');
+          alert('Не удалось загрузить данные ресторана. Пожалуйста, попробуйте позже.');
         }
         
         // Получаем актуальные заказы
+        console.log('Fetching restaurant orders for ID:', parsedUser.restaurantId);
         const ordersData = await getRestaurantOrders(parsedUser.restaurantId);
         console.log('Refreshed orders:', ordersData);
         
@@ -1084,13 +1090,24 @@ const OwnerStatisticsPage: React.FC = () => {
             deliveryMethod: Math.random() > 0.5 ? 'delivery' as const : 'pickup' as const
           }));
           
+          console.log('Extended orders with delivery method:', extendedOrders);
           setOrders(extendedOrders);
           setCompletedOrders(extendedOrders.filter(order => order.status === 'completed'));
           setPendingOrders(extendedOrders.filter(order => order.status === 'pending'));
+        } else {
+          console.log('No orders found or empty array returned');
+          setOrders([]);
+          setCompletedOrders([]);
+          setPendingOrders([]);
         }
       } catch (error) {
         console.error("Error refreshing data:", error);
+        alert(`Ошибка при обновлении данных: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
       }
+    } else {
+      console.error("No user data found in localStorage");
+      alert('Пользователь не найден. Пожалуйста, войдите в систему заново.');
+      handleLogout();
     }
     
     setIsLoading(false);

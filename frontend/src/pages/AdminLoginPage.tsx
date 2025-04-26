@@ -220,7 +220,7 @@ const AdminLoginPage: React.FC = () => {
 
   const setTestAccount = (testEmail: string) => {
     setEmail(testEmail);
-    setPassword('password123');
+    setPassword('kulcha2024');
   };
 
   return (
@@ -280,15 +280,30 @@ const AdminLoginPage: React.FC = () => {
       </LoginCard>
       
       <TestAccountsContainer>
-        <TestAccountsTitle>Тестовые аккаунты</TestAccountsTitle>
+        <TestAccountsTitle>Аккаунты ресторанов</TestAccountsTitle>
         <TestAccount>
-          <span>Кулча Хаус:</span> <AccountInfo onClick={() => setTestAccount('petrov@kulcha.com')}>petrov@kulcha.com</AccountInfo>
+          <span>Kulcha Центральный:</span> <AccountInfo onClick={() => setTestAccount('central@kulcha.ru')}>central@kulcha.ru</AccountInfo>
         </TestAccount>
         <TestAccount>
-          <span>Биргах:</span> <AccountInfo onClick={() => setTestAccount('sidorova@kulcha.com')}>sidorova@kulcha.com</AccountInfo>
+          <span>Kulcha Экспресс:</span> <AccountInfo onClick={() => setTestAccount('express@kulcha.ru')}>express@kulcha.ru</AccountInfo>
         </TestAccount>
         <TestAccount>
-          <span>Пароль для всех:</span> <AccountInfo>password123</AccountInfo>
+          <span>Kulcha Премиум:</span> <AccountInfo onClick={() => setTestAccount('premium@kulcha.ru')}>premium@kulcha.ru</AccountInfo>
+        </TestAccount>
+        <TestAccount>
+          <span>Kulcha Фэмили:</span> <AccountInfo onClick={() => setTestAccount('family@kulcha.ru')}>family@kulcha.ru</AccountInfo>
+        </TestAccount>
+        <TestAccount>
+          <span>Kulcha Восточный:</span> <AccountInfo onClick={() => setTestAccount('east@kulcha.ru')}>east@kulcha.ru</AccountInfo>
+        </TestAccount>
+        <TestAccount>
+          <span>Kulcha Гурмэ:</span> <AccountInfo onClick={() => setTestAccount('gourmet@kulcha.ru')}>gourmet@kulcha.ru</AccountInfo>
+        </TestAccount>
+        <TestAccount>
+          <span>Kulcha Традиции:</span> <AccountInfo onClick={() => setTestAccount('tradition@kulcha.ru')}>tradition@kulcha.ru</AccountInfo>
+        </TestAccount>
+        <TestAccount>
+          <span>Пароль для всех:</span> <AccountInfo>kulcha2024</AccountInfo>
         </TestAccount>
       </TestAccountsContainer>
       
