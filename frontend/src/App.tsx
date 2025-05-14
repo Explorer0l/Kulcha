@@ -22,6 +22,7 @@ const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const AdminMenuManagementPage = lazy(() => import('./pages/AdminMenuManagementPage'));
 const OwnerStatisticsPage = lazy(() => import('./pages/owner/OwnerStatisticsPage'));
 const OwnerMenuPage = lazy(() => import('./pages/owner/OwnerMenuPage'));
+const TunnelConfigPage = lazy(() => import('./pages/TunnelConfigPage'));
 
 function App() {
   // Инициализация базы данных администратора при загрузке приложения
@@ -92,6 +93,7 @@ function App() {
                 <Route path="/admin/menu" element={<AdminMenuManagementPage />} />
                 <Route path="/owner/statistics" element={<OwnerStatisticsPage />} />
                 <Route path="/owner/menu" element={<OwnerMenuPage />} />
+                <Route path="/config/tunnel" element={<TunnelConfigPage />} />
               </Routes>
             </LazyLoader>
           </div>

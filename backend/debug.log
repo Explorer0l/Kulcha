@@ -690,3 +690,275 @@ INFO 2025-05-14 19:59:42,375 views 7 140229302286016 Заголовки запр
 INFO 2025-05-14 19:59:42,380 views 7 140229302286016 В базе данных 5 городов
 INFO 2025-05-14 19:59:42,382 views 7 140229302286016 Возвращаем 5 городов
 INFO 2025-05-14 19:59:42,382 basehttp 7 140229302286016 "GET /api/cities/ HTTP/1.0" 200 555
+WARNING 2025-05-14 20:06:43,668 log 7 140229302286016 Not Found: /
+WARNING 2025-05-14 20:06:43,669 basehttp 7 140229302286016 "GET / HTTP/1.1" 404 2299
+WARNING 2025-05-14 20:06:44,353 log 7 140229302286016 Not Found: /favicon.ico
+WARNING 2025-05-14 20:06:44,354 basehttp 7 140229302286016 "GET /favicon.ico HTTP/1.1" 404 2350
+INFO 2025-05-14 20:06:54,966 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:06:54,967 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1100
+INFO 2025-05-14 20:06:55,523 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:06:55,523 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1099
+INFO 2025-05-14 20:06:56,125 views 7 140229292844736 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:06:56,126 views 7 140229292844736 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:06:56,126 views 7 140229292844736 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.72, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.72;proto=https'}
+INFO 2025-05-14 20:06:56,130 views 7 140229292844736 В базе данных 5 городов
+INFO 2025-05-14 20:06:56,132 views 7 140229292844736 Возвращаем 5 городов
+INFO 2025-05-14 20:06:56,133 basehttp 7 140229292844736 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:07:02,274 views 7 140229302286016 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:07:02,275 basehttp 7 140229302286016 "GET /api/health/ HTTP/1.0" 200 1107
+INFO 2025-05-14 20:07:02,284 views 7 140229302286016 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:07:02,284 views 7 140229302286016 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:07:02,288 views 7 140229302286016 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:07:02,294 views 7 140229302286016 Возвращаем 2 кафе
+INFO 2025-05-14 20:07:02,295 basehttp 7 140229302286016 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:07:02,822 views 7 140229302286016 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:07:02,823 views 7 140229302286016 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:07:02,827 views 7 140229302286016 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:07:02,831 views 7 140229302286016 Возвращаем 2 кафе
+INFO 2025-05-14 20:07:02,832 basehttp 7 140229302286016 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:07:03,402 views 7 140229302286016 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:07:03,402 views 7 140229302286016 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:07:03,407 views 7 140229302286016 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:07:03,412 views 7 140229302286016 Возвращаем 2 кафе
+INFO 2025-05-14 20:07:03,413 basehttp 7 140229302286016 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:07:04,431 basehttp 7 140229302286016 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:07:04,432 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:07:04,433 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1089
+INFO 2025-05-14 20:07:04,975 basehttp 7 140229292844736 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:07:05,623 basehttp 7 140229292844736 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:07:18,387 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:07:18,387 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1101
+INFO 2025-05-14 20:07:54,830 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:07:54,831 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1099
+INFO 2025-05-14 20:07:56,311 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:07:56,312 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1100
+INFO 2025-05-14 20:07:58,125 views 7 140229292844736 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:07:58,126 views 7 140229292844736 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:07:58,126 views 7 140229292844736 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.72, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.72;proto=https'}
+INFO 2025-05-14 20:07:58,131 views 7 140229292844736 В базе данных 5 городов
+INFO 2025-05-14 20:07:58,133 views 7 140229292844736 Возвращаем 5 городов
+INFO 2025-05-14 20:07:58,134 basehttp 7 140229292844736 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:07:58,696 views 7 140229292844736 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:07:58,696 views 7 140229292844736 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:07:58,702 views 7 140229292844736 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:07:58,709 views 7 140229292844736 Возвращаем 2 кафе
+INFO 2025-05-14 20:07:58,710 basehttp 7 140229292844736 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:07:59,301 basehttp 7 140229292844736 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+WARNING 2025-05-14 20:08:21,401 log 7 140229292844736 Not Found: /
+WARNING 2025-05-14 20:08:21,402 basehttp 7 140229292844736 "GET / HTTP/1.1" 404 2299
+INFO 2025-05-14 20:09:27,490 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:09:27,490 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1100
+INFO 2025-05-14 20:09:28,070 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:09:28,071 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1101
+INFO 2025-05-14 20:09:28,624 views 7 140229292844736 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:09:28,624 views 7 140229292844736 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:09:28,625 views 7 140229292844736 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.68, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.68;proto=https'}
+INFO 2025-05-14 20:09:28,628 views 7 140229292844736 В базе данных 5 городов
+INFO 2025-05-14 20:09:28,630 views 7 140229292844736 Возвращаем 5 городов
+INFO 2025-05-14 20:09:28,631 basehttp 7 140229292844736 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:09:29,199 views 7 140229292844736 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:09:29,199 views 7 140229292844736 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:09:29,203 views 7 140229292844736 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:09:29,208 views 7 140229292844736 Возвращаем 2 кафе
+INFO 2025-05-14 20:09:29,209 basehttp 7 140229292844736 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:09:29,788 basehttp 7 140229292844736 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:10:00,483 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:10:00,484 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1100
+INFO 2025-05-14 20:10:01,040 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:10:01,041 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1100
+INFO 2025-05-14 20:10:01,573 views 7 140229292844736 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:10:01,573 views 7 140229292844736 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:10:01,574 views 7 140229292844736 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.68, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.68;proto=https'}
+INFO 2025-05-14 20:10:01,577 views 7 140229292844736 В базе данных 5 городов
+INFO 2025-05-14 20:10:01,579 views 7 140229292844736 Возвращаем 5 городов
+INFO 2025-05-14 20:10:01,580 basehttp 7 140229292844736 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:10:02,124 views 7 140229292844736 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:10:02,124 views 7 140229292844736 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:10:02,128 views 7 140229292844736 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:10:02,133 views 7 140229292844736 Возвращаем 2 кафе
+INFO 2025-05-14 20:10:02,134 basehttp 7 140229292844736 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:10:02,679 basehttp 7 140229292844736 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:10:59,463 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:10:59,464 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1099
+INFO 2025-05-14 20:11:00,082 views 7 140229292844736 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:11:00,083 basehttp 7 140229292844736 "GET /api/health/ HTTP/1.0" 200 1098
+INFO 2025-05-14 20:11:00,824 views 7 140229292844736 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:11:00,825 views 7 140229292844736 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:11:00,825 views 7 140229292844736 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.68, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/config/tunnel', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.68;proto=https'}
+INFO 2025-05-14 20:11:00,829 views 7 140229292844736 В базе данных 5 городов
+INFO 2025-05-14 20:11:00,830 views 7 140229292844736 Возвращаем 5 городов
+INFO 2025-05-14 20:11:00,831 basehttp 7 140229292844736 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:11:01,396 views 7 140229292844736 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:11:01,397 views 7 140229292844736 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:11:01,401 views 7 140229292844736 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:11:01,406 views 7 140229292844736 Возвращаем 2 кафе
+INFO 2025-05-14 20:11:01,406 basehttp 7 140229292844736 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:11:01,927 basehttp 7 140229292844736 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:11:55,266 autoreload 7 140253702531968 Watching for file changes with StatReloader
+INFO 2025-05-14 20:12:01,003 views 7 140253650220736 Health check запрос от 172.18.0.1: ok
+INFO 2025-05-14 20:12:01,005 basehttp 7 140253650220736 "GET /api/health/ HTTP/1.1" 200 1004
+INFO 2025-05-14 20:12:01,034 views 7 140253650220736 Health check запрос от 172.18.0.1: ok
+INFO 2025-05-14 20:12:01,035 basehttp 7 140253650220736 "GET /api/health/ HTTP/1.1" 200 1004
+INFO 2025-05-14 20:12:01,039 views 7 140253650220736 GET запрос на получение списка городов от 172.18.0.1
+INFO 2025-05-14 20:12:01,040 views 7 140253650220736 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:12:01,040 views 7 140253650220736 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': 'localhost:8000', 'Connection': 'keep-alive', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Origin': 'http://localhost', 'Sec-Fetch-Site': 'same-site', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'http://localhost/', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Cookie': 'csrftoken=e8g6TtMYF0aR9KL9SjNbfTeZPzNxFeF7'}
+INFO 2025-05-14 20:12:01,045 views 7 140253650220736 В базе данных 5 городов
+INFO 2025-05-14 20:12:01,048 views 7 140253650220736 Возвращаем 5 городов
+INFO 2025-05-14 20:12:01,049 basehttp 7 140253650220736 "GET /api/cities/ HTTP/1.1" 200 555
+INFO 2025-05-14 20:12:01,066 basehttp 7 140253566334656 "OPTIONS /api/cities/ HTTP/1.1" 200 0
+INFO 2025-05-14 20:12:01,100 views 7 140253566334656 GET запрос на получение списка городов от 172.18.0.1
+INFO 2025-05-14 20:12:01,100 views 7 140253566334656 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:12:01,100 views 7 140253566334656 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': 'localhost:8000', 'Connection': 'keep-alive', 'Cache-Control': 'max-age=0', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Accept': '*/*', 'Origin': 'http://localhost', 'Sec-Fetch-Site': 'same-site', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'http://localhost/', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'}
+INFO 2025-05-14 20:12:01,102 views 7 140253650220736 Получен запрос на список кафе: 172.18.0.1, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:12:01,102 views 7 140253650220736 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:12:01,105 views 7 140253566334656 В базе данных 5 городов
+INFO 2025-05-14 20:12:01,107 views 7 140253566334656 Возвращаем 5 городов
+INFO 2025-05-14 20:12:01,108 basehttp 7 140253566334656 "HEAD /api/cities/ HTTP/1.1" 200 0
+INFO 2025-05-14 20:12:01,110 views 7 140253650220736 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:12:01,117 views 7 140253650220736 Возвращаем 2 кафе
+INFO 2025-05-14 20:12:01,117 basehttp 7 140253650220736 "GET /api/cafes/?city=1 HTTP/1.1" 200 916
+INFO 2025-05-14 20:12:01,178 basehttp 7 140253650220736 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 4741
+INFO 2025-05-14 20:12:15,657 views 7 140253650220736 Health check запрос от 172.18.0.1: ok
+INFO 2025-05-14 20:12:15,657 basehttp 7 140253650220736 "GET /api/health/ HTTP/1.1" 200 1006
+INFO 2025-05-14 20:12:15,671 views 7 140253650220736 Health check запрос от 172.18.0.1: ok
+INFO 2025-05-14 20:12:15,672 basehttp 7 140253650220736 "GET /api/health/ HTTP/1.1" 200 1005
+INFO 2025-05-14 20:12:15,695 basehttp 7 140253566334656 "OPTIONS /api/cities/ HTTP/1.1" 200 0
+INFO 2025-05-14 20:12:15,698 views 7 140253650220736 GET запрос на получение списка городов от 172.18.0.1
+INFO 2025-05-14 20:12:15,698 views 7 140253650220736 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:12:15,699 views 7 140253650220736 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': 'localhost:8000', 'Connection': 'keep-alive', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Origin': 'http://localhost', 'Sec-Fetch-Site': 'same-site', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'http://localhost/', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Cookie': 'csrftoken=e8g6TtMYF0aR9KL9SjNbfTeZPzNxFeF7'}
+INFO 2025-05-14 20:12:15,703 views 7 140253650220736 В базе данных 5 городов
+INFO 2025-05-14 20:12:15,705 views 7 140253650220736 Возвращаем 5 городов
+INFO 2025-05-14 20:12:15,706 basehttp 7 140253650220736 "GET /api/cities/ HTTP/1.1" 200 555
+INFO 2025-05-14 20:12:15,734 basehttp 7 140253566334656 "OPTIONS /api/cities/ HTTP/1.1" 200 0
+INFO 2025-05-14 20:12:15,759 views 7 140253650220736 Получен запрос на список кафе: 172.18.0.1, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:12:15,760 views 7 140253650220736 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:12:15,764 views 7 140253650220736 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:12:15,770 views 7 140253650220736 Возвращаем 2 кафе
+INFO 2025-05-14 20:12:15,771 basehttp 7 140253650220736 "GET /api/cafes/?city=1 HTTP/1.1" 200 916
+INFO 2025-05-14 20:12:15,786 views 7 140253566334656 GET запрос на получение списка городов от 172.18.0.1
+INFO 2025-05-14 20:12:15,787 views 7 140253566334656 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:12:15,787 views 7 140253566334656 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': 'localhost:8000', 'Connection': 'keep-alive', 'Cache-Control': 'max-age=0', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Accept': '*/*', 'Origin': 'http://localhost', 'Sec-Fetch-Site': 'same-site', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'http://localhost/', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'}
+INFO 2025-05-14 20:12:15,791 views 7 140253566334656 В базе данных 5 городов
+INFO 2025-05-14 20:12:15,794 views 7 140253566334656 Возвращаем 5 городов
+INFO 2025-05-14 20:12:15,795 basehttp 7 140253566334656 "HEAD /api/cities/ HTTP/1.1" 200 0
+INFO 2025-05-14 20:12:15,824 basehttp 7 140253650220736 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 4741
+INFO 2025-05-14 20:12:40,286 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:12:40,286 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1098
+INFO 2025-05-14 20:12:40,836 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:12:40,837 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1100
+INFO 2025-05-14 20:12:41,404 views 7 140253557941952 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:12:41,405 views 7 140253557941952 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:12:41,405 views 7 140253557941952 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.68, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.68;proto=https'}
+INFO 2025-05-14 20:12:41,410 views 7 140253557941952 В базе данных 5 городов
+INFO 2025-05-14 20:12:41,413 views 7 140253557941952 Возвращаем 5 городов
+INFO 2025-05-14 20:12:41,414 basehttp 7 140253557941952 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:12:41,957 views 7 140253557941952 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:12:41,957 views 7 140253557941952 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:12:41,962 views 7 140253557941952 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:12:41,968 views 7 140253557941952 Возвращаем 2 кафе
+INFO 2025-05-14 20:12:41,969 basehttp 7 140253557941952 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:12:42,528 basehttp 7 140253557941952 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:12:49,812 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:12:49,813 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1098
+INFO 2025-05-14 20:12:50,381 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:12:50,382 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1098
+INFO 2025-05-14 20:12:50,915 views 7 140253557941952 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:12:50,915 views 7 140253557941952 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:12:50,915 views 7 140253557941952 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.68, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/config/tunnel', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.68;proto=https'}
+INFO 2025-05-14 20:12:50,919 views 7 140253557941952 В базе данных 5 городов
+INFO 2025-05-14 20:12:50,921 views 7 140253557941952 Возвращаем 5 городов
+INFO 2025-05-14 20:12:50,922 basehttp 7 140253557941952 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:12:51,457 views 7 140253557941952 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:12:51,457 views 7 140253557941952 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:12:51,461 views 7 140253557941952 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:12:51,468 views 7 140253557941952 Возвращаем 2 кафе
+INFO 2025-05-14 20:12:51,468 basehttp 7 140253557941952 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:12:52,013 basehttp 7 140253557941952 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+WARNING 2025-05-14 20:12:54,364 log 7 140253557941952 Not Found: /
+WARNING 2025-05-14 20:12:54,365 basehttp 7 140253557941952 "GET / HTTP/1.1" 404 2299
+INFO 2025-05-14 20:13:10,883 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:10,884 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1100
+INFO 2025-05-14 20:13:11,426 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:11,427 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1101
+INFO 2025-05-14 20:13:11,982 views 7 140253557941952 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:13:11,982 views 7 140253557941952 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:13:11,983 views 7 140253557941952 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.104, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/config/tunnel', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.104;proto=https'}
+INFO 2025-05-14 20:13:11,987 views 7 140253557941952 В базе данных 5 городов
+INFO 2025-05-14 20:13:11,989 views 7 140253557941952 Возвращаем 5 городов
+INFO 2025-05-14 20:13:11,990 basehttp 7 140253557941952 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:13:12,609 views 7 140253557941952 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:13:12,609 views 7 140253557941952 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:13:12,615 views 7 140253557941952 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:13:12,620 views 7 140253557941952 Возвращаем 2 кафе
+INFO 2025-05-14 20:13:12,621 basehttp 7 140253557941952 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:13:13,183 basehttp 7 140253557941952 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:13:14,550 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:14,551 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1102
+INFO 2025-05-14 20:13:15,110 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:15,111 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1102
+INFO 2025-05-14 20:13:15,642 views 7 140253557941952 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:13:15,642 views 7 140253557941952 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:13:15,643 views 7 140253557941952 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.104, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7', 'Forwarded': 'for=27.125.248.104;proto=https'}
+INFO 2025-05-14 20:13:15,647 views 7 140253557941952 В базе данных 5 городов
+INFO 2025-05-14 20:13:15,650 views 7 140253557941952 Возвращаем 5 городов
+INFO 2025-05-14 20:13:15,650 basehttp 7 140253557941952 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:13:16,195 views 7 140253557941952 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:13:16,195 views 7 140253557941952 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:13:16,199 views 7 140253557941952 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:13:16,205 views 7 140253557941952 Возвращаем 2 кафе
+INFO 2025-05-14 20:13:16,206 basehttp 7 140253557941952 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:13:16,763 basehttp 7 140253557941952 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:13:43,476 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:43,477 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1134
+INFO 2025-05-14 20:13:44,008 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:44,009 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1133
+INFO 2025-05-14 20:13:44,552 views 7 140253557941952 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:13:44,552 views 7 140253557941952 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:13:44,553 views 7 140253557941952 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.72, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Windows"', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Microsoft Edge";v="136", "Microsoft Edge WebView2";v="136", "Not.A/Brand";v="99", "Chromium";v="136"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'en-US,en;q=0.9', 'Forwarded': 'for=27.125.248.72;proto=https'}
+INFO 2025-05-14 20:13:44,556 views 7 140253557941952 В базе данных 5 городов
+INFO 2025-05-14 20:13:44,559 views 7 140253557941952 Возвращаем 5 городов
+INFO 2025-05-14 20:13:44,559 basehttp 7 140253557941952 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:13:54,039 views 7 140253557941952 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:13:54,040 views 7 140253557941952 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:13:54,044 views 7 140253557941952 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:13:54,049 views 7 140253557941952 Возвращаем 2 кафе
+INFO 2025-05-14 20:13:54,050 basehttp 7 140253557941952 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:13:54,822 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:54,823 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1139
+INFO 2025-05-14 20:13:57,734 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:13:57,735 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1123
+INFO 2025-05-14 20:13:57,738 basehttp 7 140253549549248 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:13:58,309 basehttp 7 140253549549248 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:13:58,975 basehttp 7 140253549549248 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:14:20,673 views 7 140253549549248 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:14:20,673 basehttp 7 140253549549248 "GET /api/health/ HTTP/1.0" 200 1176
+INFO 2025-05-14 20:14:21,269 views 7 140253549549248 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:14:21,270 basehttp 7 140253549549248 "GET /api/health/ HTTP/1.0" 200 1177
+INFO 2025-05-14 20:14:24,077 views 7 140253549549248 GET запрос на получение списка городов от 172.18.0.3
+INFO 2025-05-14 20:14:24,077 views 7 140253549549248 Параметры запроса: <QueryDict: {}>
+INFO 2025-05-14 20:14:24,078 views 7 140253549549248 Заголовки запроса: {'Content-Length': '', 'Content-Type': 'application/json', 'Host': '6d378163ac82b0.lhr.life', 'X-Real-Ip': '172.18.0.1', 'X-Forwarded-For': '27.125.248.72, 172.18.0.1', 'X-Forwarded-Proto': 'http', 'Connection': 'close', 'Sec-Ch-Ua-Platform': '"Android"', 'User-Agent': 'Mozilla/5.0 (Linux; Android 14; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.7049.111 Mobile Safari/537.36 Telegram-Android/11.9.2 (Tecno TECNO LI7; Android 14; SDK 34; AVERAGE)', 'Accept': 'application/json', 'Sec-Ch-Ua': '"Android WebView";v="135", "Not-A.Brand";v="8", "Chromium";v="135"', 'Sec-Ch-Ua-Mobile': '?1', 'Sec-Fetch-Site': 'same-origin', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Dest': 'empty', 'Referer': 'https://6d378163ac82b0.lhr.life/role-selection', 'Accept-Encoding': 'gzip, deflate, br, zstd', 'Accept-Language': 'en-US,en;q=0.9,ru-RU;q=0.8,ru;q=0.7', 'Forwarded': 'for=27.125.248.72;proto=https'}
+INFO 2025-05-14 20:14:24,081 views 7 140253549549248 В базе данных 5 городов
+INFO 2025-05-14 20:14:24,083 views 7 140253549549248 Возвращаем 5 городов
+INFO 2025-05-14 20:14:24,083 basehttp 7 140253549549248 "GET /api/cities/ HTTP/1.0" 200 555
+INFO 2025-05-14 20:14:26,993 views 7 140253549549248 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:14:26,994 views 7 140253549549248 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:14:26,998 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:14:26,998 views 7 140253549549248 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:14:26,998 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1184
+INFO 2025-05-14 20:14:27,004 views 7 140253549549248 Возвращаем 2 кафе
+INFO 2025-05-14 20:14:27,004 basehttp 7 140253549549248 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:14:27,553 views 7 140253549549248 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:14:27,553 views 7 140253549549248 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:14:27,557 views 7 140253549549248 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:14:27,562 views 7 140253549549248 Возвращаем 2 кафе
+INFO 2025-05-14 20:14:27,563 basehttp 7 140253549549248 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:14:28,119 views 7 140253549549248 Получен запрос на список кафе: 172.18.0.3, параметры: <QueryDict: {'city': ['1']}>
+INFO 2025-05-14 20:14:28,119 views 7 140253549549248 GET запрос на получение ресторанов. Фильтрация по городу: 1
+INFO 2025-05-14 20:14:28,123 views 7 140253549549248 Фильтруем кафе по городу ID=1, найдено: 2
+INFO 2025-05-14 20:14:28,127 views 7 140253549549248 Возвращаем 2 кафе
+INFO 2025-05-14 20:14:28,128 basehttp 7 140253549549248 "GET /api/cafes/?city=1 HTTP/1.0" 200 916
+INFO 2025-05-14 20:14:30,386 basehttp 7 140253549549248 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:14:30,387 views 7 140253557941952 Health check запрос от 172.18.0.3: ok
+INFO 2025-05-14 20:14:30,388 basehttp 7 140253557941952 "GET /api/health/ HTTP/1.0" 200 1167
+INFO 2025-05-14 20:14:30,936 basehttp 7 140253557941952 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
+INFO 2025-05-14 20:14:31,560 basehttp 7 140253557941952 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 4741
