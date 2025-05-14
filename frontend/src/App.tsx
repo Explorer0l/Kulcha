@@ -5,6 +5,7 @@ import GlobalStyles from './styles/GlobalStyles';
 import LazyLoader from './components/LazyLoader';
 import ErrorBoundary from './components/ErrorBoundary';
 import { initializeAdminDatabase } from './data/adminDatabase';
+import RoleRedirect from './components/RoleRedirect';
 
 // Lazy loaded components
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -73,6 +74,10 @@ function App() {
               <Routes>
                 {/* Всегда перенаправляем с корневого пути на страницу выбора роли */}
                 <Route path="/" element={<Navigate to="/role-selection" replace />} />
+                
+                {/* Специальный путь для перенаправления с role-selection на city-selection */}
+                <Route path="/role-to-city" element={<RoleRedirect fromPath="/role-selection" toPath="/city-selection" />} />
+                
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/city-selection" element={<CitySelectionPage />} />
                 <Route path="/restaurant-selection" element={<RestaurantSelectionPage />} />

@@ -265,7 +265,7 @@ const OrderDetailsPage: React.FC = () => {
   
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'new':
         return 'Ожидает подтверждения';
       case 'confirmed':
         return 'Подтвержден';
@@ -281,7 +281,7 @@ const OrderDetailsPage: React.FC = () => {
   };
   
   const getStatusIndex = (status: string) => {
-    const statuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivered'];
+    const statuses = ['new', 'confirmed', 'preparing', 'ready', 'delivered'];
     return statuses.indexOf(status);
   };
   

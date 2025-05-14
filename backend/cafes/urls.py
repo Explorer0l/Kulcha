@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CityViewSet, CafeViewSet, CafeContactViewSet,
     MenuItemViewSet, OrderViewSet, OrderItemViewSet,
-    UserAddressViewSet
+    UserAddressViewSet, api_health_check
 )
 
 router = DefaultRouter()
@@ -17,4 +17,5 @@ router.register(r'addresses', UserAddressViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('health/', api_health_check, name='api-health-check'),
 ]

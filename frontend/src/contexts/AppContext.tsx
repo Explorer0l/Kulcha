@@ -44,6 +44,7 @@ interface AppContextType extends AppState {
   placeOrder: () => Order;
   updateUserAddress: (address: UserAddress) => void;
   userAddress: UserAddress | null;
+  refreshRestaurantData: (restaurantId: number) => Promise<void>;
 }
 
 // Создаем контекст с начальным значением undefined
@@ -91,28 +92,58 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const cities = await api.getCities();
-        setState(prevState => ({
-          ...prevState,
-          cities
-        }));
+        console.log('Loading initial application data...');
         
-        // Если выбран город, загружаем рестораны
-        if (state.selectedCity) {
-          const restaurants = await api.getRestaurantsByCity(state.selectedCity.id);
-          setState(prevState => ({
-            ...prevState,
-            restaurants
-          }));
+        // Проверяем соединение с API
+        try {
+          const healthCheck = await api.checkApiHealth();
+          console.log('API health check result:', healthCheck);
+          
+          if (healthCheck.status !== 'ok') {
+            console.warn('API health check failed, but continuing to load data');
+          }
+        } catch (healthError) {
+          console.error('API health check failed:', healthError);
         }
         
-        // Если выбран ресторан, загружаем меню
-        if (state.selectedRestaurant) {
-          const menuItems = await api.getMenuItems(state.selectedRestaurant);
+        // Загружаем города
+        try {
+          const cities = await api.getCities();
           setState(prevState => ({
             ...prevState,
-            menuItems
+            cities
           }));
+          console.log(`Loaded ${cities.length} cities`);
+          
+          // Если выбран город, загружаем рестораны
+          if (state.selectedCity) {
+            try {
+              const restaurants = await api.getRestaurantsByCity(state.selectedCity.id);
+              setState(prevState => ({
+                ...prevState,
+                restaurants
+              }));
+              console.log(`Loaded ${restaurants.length} restaurants for city ${state.selectedCity?.id}`);
+            } catch (restaurantsError) {
+              console.error(`Error loading restaurants for city ${state.selectedCity?.id}:`, restaurantsError);
+            }
+          }
+          
+          // Если выбран ресторан, загружаем меню
+          if (state.selectedRestaurant) {
+            try {
+              const menuItems = await api.getMenuItems(state.selectedRestaurant);
+              setState(prevState => ({
+                ...prevState,
+                menuItems
+              }));
+              console.log(`Loaded ${menuItems.length} menu items for restaurant ${state.selectedRestaurant}`);
+            } catch (menuError) {
+              console.error(`Error loading menu for restaurant ${state.selectedRestaurant}:`, menuError);
+            }
+          }
+        } catch (citiesError) {
+          console.error("Failed to load cities:", citiesError);
         }
       } catch (error) {
         console.error("Failed to load initial data:", error);
@@ -120,7 +151,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     };
     
     loadInitialData();
-  }, [state.selectedCity?.id, state.selectedRestaurant]);
+  }, [state.selectedCity, state.selectedRestaurant]);
 
   // Начальный адрес пользователя
   const [userAddress, setUserAddress] = useState<UserAddress | null>(null);
@@ -260,7 +291,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       items: [...state.cart],
       totalAmount: state.cart.reduce((total, item) => total + item.price * item.quantity, 0),
       date: new Date().toISOString(),
-      status: 'pending',
+      status: 'new',
       deliveryMethod: state.deliveryMethod,
       restaurantId: state.selectedRestaurant || 0,
       userAddress: userAddress || undefined
@@ -295,7 +326,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
               customer: customerName,
               date: new Date().toISOString(),
               amount: newOrder.totalAmount,
-              status: 'pending'
+              status: 'new'
             });
             
             if (adminOrder && adminOrder.id > 0) {
@@ -310,7 +341,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                     customer: customerName,
                     date: new Date().toISOString(),
                     amount: newOrder.totalAmount,
-                    status: 'pending'
+                    status: 'new'
                   });
                   console.log('Fallback admin order created successfully', fallbackOrder?.id);
                 } catch (retryError) {
@@ -371,6 +402,18 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   }, [state.isDarkMode]);
 
+  const refreshRestaurantData = async (restaurantId: number) => {
+    try {
+      const restaurants = await api.getRestaurantsByCity(state.selectedCity?.id || 0);
+      setState(prevState => ({
+        ...prevState,
+        restaurants
+      }));
+    } catch (error) {
+      console.error('Error refreshing restaurant data:', error);
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       ...state,
@@ -388,6 +431,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       placeOrder,
       updateUserAddress,
       userAddress,
+      refreshRestaurantData,
     }}>
       {children}
     </AppContext.Provider>

@@ -225,7 +225,7 @@ const ProfilePage: React.FC = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'new':
         return 'Ожидает подтверждения';
       case 'confirmed':
         return 'Подтвержден';
@@ -244,7 +244,7 @@ const ProfilePage: React.FC = () => {
   
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'new':
         return '#FFC107'; // желтый
       case 'confirmed':
         return '#2196F3'; // синий

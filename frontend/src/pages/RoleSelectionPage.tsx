@@ -197,8 +197,9 @@ const RoleSelectionPage: React.FC = () => {
     localStorage.setItem('userRole', 'user');
     setUserRole('user');
     
-    // Перенаправляем на страницу выбора города
-    navigate('/city-selection');
+    // Перенаправляем на специальный маршрут перенаправления
+    // который выполнит асинхронное перенаправление после обновления контекста
+    navigate('/role-to-city');
   };
 
   const handleOwnerSelect = () => {

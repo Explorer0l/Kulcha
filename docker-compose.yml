@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=/api
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - kulcha-network
+    volumes:
+      - ./frontend/public:/app/public
+      - ./frontend/src:/app/src
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
+      - CORS_ALLOWED_ORIGINS=http://localhost,http://frontend
+    volumes:
+      - ./backend:/app
+      - ./backend/media:/app/media
+    ports:
+      - "8000:8000"
+    networks:
+      - kulcha-network
+    command: python manage.py runserver 0.0.0.0:8000
+
+networks:
+  kulcha-network:
+    driver: bridge 

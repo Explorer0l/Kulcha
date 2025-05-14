@@ -1,7 +1,18 @@
-import { MenuItem, Order, UserAddress, RestaurantAdminData } from '../data/adminDatabase';
+import { Order, UserAddress } from '../data/adminDatabase';
 
-// Базовый URL API
-const API_BASE_URL = 'http://localhost:8000/api';
+// Расширяем интерфейс Window для TypeScript
+declare global {
+  interface Window {
+    API_CONFIG?: {
+      API_BASE_URL: string;
+    };
+  }
+}
+
+// Базовый URL API - используем динамический URL из apiConfig
+const API_BASE_URL = window.API_CONFIG?.API_BASE_URL || '/api';
+
+console.log('API service using URL:', API_BASE_URL);
 
 // Типы для кэширования
 type CacheKey = string;
@@ -65,14 +76,170 @@ const cacheService = new CacheService();
 // Функция обработки ошибок API
 const handleApiError = (error: any, message: string) => {
   console.error(`${message}:`, error);
+  
+  // Добавляем больше информации о запросе при ошибке
+  if (error.response) {
+    console.error('Error status:', error.response.status);
+    console.error('Error data:', error.response.data);
+  }
+  
   throw error;
+};
+
+// Вспомогательная функция для выполнения запросов с правильными заголовками
+const fetchWithHeaders = async (url: string, options: RequestInit = {}) => {
+  const defaultHeaders = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+  
+  let finalUrl = '';
+  
+  // Проверяем, является ли URL абсолютным
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    finalUrl = url;
+  } else {
+    // Относительный путь - нужно добавить базовый URL
+    const apiBase = API_BASE_URL.endsWith('/') ? API_BASE_URL : `${API_BASE_URL}/`;
+    
+    // Удаляем начальный слеш и 'api/' префикс из url если они есть
+    let cleanUrl = url;
+    if (cleanUrl.startsWith('/')) {
+      cleanUrl = cleanUrl.substring(1);
+    }
+    if (cleanUrl.startsWith('api/')) {
+      cleanUrl = cleanUrl.substring(4);
+    }
+    
+    // Формируем финальный URL
+    if (apiBase.startsWith('/')) {
+      // Относительный базовый URL - добавляем origin
+      finalUrl = `${window.location.origin}${apiBase}${cleanUrl}`;
+    } else {
+      // Абсолютный базовый URL
+      finalUrl = `${apiBase}${cleanUrl}`;
+    }
+  }
+  
+  // Проверка на дублированный путь /api/api/ в URL
+  finalUrl = finalUrl.replace(/\/api\/api\//g, '/api/');
+  
+  // Дополнительная проверка наличия дублированных URL
+  const urlPattern = /(https?:\/\/[^\/]+)(\/api\/)(https?:\/\/[^\/]+\/api\/)/;
+  if (urlPattern.test(finalUrl)) {
+    // Если обнаружено дублирование URL, исправляем его
+    finalUrl = finalUrl.replace(urlPattern, '$1$2');
+  }
+  
+  // Отладочное логирование
+  console.log('API Request URL:', {
+    originalUrl: url,
+    API_BASE_URL: API_BASE_URL,
+    finalUrl: finalUrl
+  });
+  
+  const mergedOptions = {
+    ...options,
+    headers: {
+      ...defaultHeaders,
+      ...options.headers,
+    },
+    credentials: 'include' as RequestCredentials,
+    mode: 'cors' as RequestMode,
+  };
+  
+  try {
+    console.log(`Fetch request to: ${finalUrl}`, mergedOptions);
+    const response = await fetch(finalUrl, mergedOptions);
+    
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      console.error('Response:', response);
+      
+      try {
+        const errorData = await response.json();
+        console.error('Error data:', errorData);
+      } catch (e) {
+        console.error('Could not parse error response');
+      }
+      
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response;
+  } catch (error: any) {
+    console.error(`Fetch error for ${finalUrl}:`, error);
+    
+    // При ошибке 404 и API_BASE_URL является относительным путем, попробуем использовать абсолютный путь
+    if (error.message.includes('404') && API_BASE_URL.startsWith('/')) {
+      const fallbackUrl = `${window.location.origin}/api/${url.replace(/^\/+/, '')}`;
+      console.log(`Trying fallback URL with full path: ${fallbackUrl}`);
+      return fetch(fallbackUrl, mergedOptions);
+    }
+    
+    throw error;
+  }
 };
 
 // API сервис с поддержкой кэширования
 export const api = {
+  // Проверка здоровья API
+  async checkApiHealth() {
+    try {
+      console.log('Checking API health...');
+      
+      // Используем чистый эндпоинт
+      const response = await fetchWithHeaders('health/');
+      const data = await response.json();
+      console.log('API health check result:', data);
+      return data;
+    } catch (error: any) {
+      console.error('API health check failed:', error);
+      
+      // При ошибке попробуем альтернативные URL
+      try {
+        console.log('Trying alternative health check URL...');
+        
+        // Используем абсолютный URL
+        const alternativeUrl = `${window.location.origin}/api/health/`;
+        const response = await fetch(alternativeUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Alternative API health check successful:', data);
+          
+          // Обновляем API_BASE_URL для дальнейших запросов
+          if (window.API_CONFIG) {
+            console.log('Updating API_CONFIG to use relative URL');
+            window.API_CONFIG.API_BASE_URL = '/api';
+          }
+          
+          return {
+            ...data,
+            alternative_url_used: true
+          };
+        }
+      } catch (alternativeError) {
+        console.error('Alternative health check also failed:', alternativeError);
+      }
+      
+      return {
+        status: 'error',
+        error: error.message,
+        timestamp: Date.now()
+      };
+    }
+  },
+
   // Получение списка городов
   async getCities() {
-    const cacheKey = 'cities';
+    const cacheKey = 'cities_list';
     const cachedData = cacheService.get(cacheKey);
     
     if (cachedData) {
@@ -80,10 +247,14 @@ export const api = {
     }
     
     try {
-      const response = await fetch(`${API_BASE_URL}/cities/`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Проверяем здоровье API перед выполнением запроса
+      const healthCheck = await this.checkApiHealth();
+      if (healthCheck.status !== 'ok') {
+        console.warn('API health check failed, but still trying to get cities');
       }
+      
+      // Используем только чистый endpoint без API_BASE_URL
+      const response = await fetchWithHeaders('cities/');
       const data = await response.json();
       
       cacheService.set(cacheKey, data);
@@ -103,10 +274,8 @@ export const api = {
     }
     
     try {
-      const response = await fetch(`${API_BASE_URL}/cafes/?city=${cityId}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Используем чистый endpoint
+      const response = await fetchWithHeaders(`cafes/?city=${cityId}`);
       const data = await response.json();
       
       cacheService.set(cacheKey, data);
@@ -127,31 +296,87 @@ export const api = {
     
     try {
       const url = restaurantId 
-        ? `${API_BASE_URL}/menu-items/?cafe=${restaurantId}`
-        : `${API_BASE_URL}/menu-items/`;
+        ? `menu-items/?cafe=${restaurantId}` 
+        : 'menu-items/';
       
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Используем чистый endpoint
+      const response = await fetchWithHeaders(url);
       const data = await response.json();
       
-      // Трансформируем данные в формат, ожидаемый фронтендом
-      const transformedData = data.map((item: any) => ({
-        id: item.id,
-        restaurantId: item.cafe,
-        name: item.name,
-        description: item.description || '',
-        price: item.price,
-        category: item.category,
-        imageUrl: item.image || item.image_url || '',
-        available: item.available
-      }));
-      
-      cacheService.set(cacheKey, transformedData);
-      return transformedData;
+      cacheService.set(cacheKey, data);
+      return data;
     } catch (error) {
-      return handleApiError(error, 'Error fetching menu items');
+      return handleApiError(error, `Error fetching menu items for restaurant ${restaurantId || 'all'}`);
+    }
+  },
+
+  // Получение категорий
+  async getCategories() {
+    const cacheKey = 'categories_list';
+    const cachedData = cacheService.get(cacheKey);
+    
+    if (cachedData) {
+      return cachedData;
+    }
+    
+    try {
+      // Используем чистый endpoint
+      const response = await fetchWithHeaders('categories/');
+      const data = await response.json();
+      
+      cacheService.set(cacheKey, data);
+      return data;
+    } catch (error) {
+      return handleApiError(error, 'Error fetching categories');
+    }
+  },
+
+  // Размещение заказа
+  async placeOrder(orderData: any) {
+    try {
+      // Используем чистый endpoint
+      const response = await fetchWithHeaders('orders/', {
+        method: 'POST',
+        body: JSON.stringify(orderData),
+      });
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return handleApiError(error, 'Error placing order');
+    }
+  },
+
+  // Получение заказа по ID
+  async getOrderById(orderId: string) {
+    try {
+      // Используем чистый endpoint
+      const response = await fetchWithHeaders(`orders/${orderId}/`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return handleApiError(error, `Error fetching order ${orderId}`);
+    }
+  },
+  
+  // Получение настроек приложения
+  async getAppSettings() {
+    const cacheKey = 'app_settings';
+    const cachedData = cacheService.get(cacheKey);
+    
+    if (cachedData) {
+      return cachedData;
+    }
+    
+    try {
+      // Используем чистый endpoint
+      const response = await fetchWithHeaders('settings/');
+      const data = await response.json();
+      
+      cacheService.set(cacheKey, data);
+      return data;
+    } catch (error) {
+      return handleApiError(error, 'Error fetching app settings');
     }
   },
 
@@ -169,18 +394,10 @@ export const api = {
         }))
       };
 
-      const response = await fetch(`${API_BASE_URL}/orders/`, {
+      const response = await fetchWithHeaders(`orders/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-        credentials: 'include'
+        body: JSON.stringify(orderData)
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       
       const data = await response.json();
       
@@ -198,6 +415,7 @@ export const api = {
       
       // Инвалидируем кэш заказов
       cacheService.invalidate('orders');
+      cacheService.invalidate('user_orders');
       
       return newOrder;
     } catch (error) {
@@ -215,25 +433,18 @@ export const api = {
     }
     
     try {
-      const response = await fetch(`${API_BASE_URL}/orders/`, {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
+      const response = await fetchWithHeaders(`orders/`);
       const data = await response.json();
       
       // Преобразуем данные в формат, ожидаемый фронтендом
       const transformedOrders = await Promise.all(data.map(async (order: any) => {
         // Получаем детали заказа (элементы заказа)
-        const orderItemsResponse = await fetch(`${API_BASE_URL}/order-items/?order=${order.id}`);
+        const orderItemsResponse = await fetchWithHeaders(`order-items/?order=${order.id}`);
         const orderItems = await orderItemsResponse.json();
         
         // Получаем детали каждого элемента меню
         const items = await Promise.all(orderItems.map(async (item: any) => {
-          const menuItemResponse = await fetch(`${API_BASE_URL}/menu-items/${item.menu_item}/`);
+          const menuItemResponse = await fetchWithHeaders(`menu-items/${item.menu_item}/`);
           const menuItem = await menuItemResponse.json();
           
           return {
@@ -274,18 +485,10 @@ export const api = {
       // Преобразуем статус в формат бэкенда
       const backendStatus = status;
       
-      const response = await fetch(`${API_BASE_URL}/orders/${orderId}/update_status/`, {
+      const response = await fetchWithHeaders(`orders/${orderId}/update_status/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: backendStatus }),
-        credentials: 'include'
+        body: JSON.stringify({ status: backendStatus })
       });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       
       const data = await response.json();
       
@@ -302,18 +505,10 @@ export const api = {
   // Добавление адреса пользователя
   async addUserAddress(address: Omit<UserAddress, 'id'>) {
     try {
-      const response = await fetch(`${API_BASE_URL}/addresses/`, {
+      const response = await fetchWithHeaders(`addresses/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(address),
-        credentials: 'include'
+        body: JSON.stringify(address)
       });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       
       const data = await response.json();
       
@@ -336,14 +531,7 @@ export const api = {
     }
     
     try {
-      const response = await fetch(`${API_BASE_URL}/addresses/`, {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
+      const response = await fetchWithHeaders(`addresses/`);
       const data = await response.json();
       
       cacheService.set(cacheKey, data);

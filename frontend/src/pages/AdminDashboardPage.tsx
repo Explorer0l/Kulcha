@@ -199,7 +199,7 @@ const StatusBadge = styled.span<{ status: string }>`
     switch (props.status) {
       case 'completed':
         return 'var(--success-bg)';
-      case 'pending':
+      case 'new':
         return 'var(--warning-bg)';
       case 'cancelled':
         return 'var(--error-bg)';
@@ -211,7 +211,7 @@ const StatusBadge = styled.span<{ status: string }>`
     switch (props.status) {
       case 'completed':
         return 'var(--success-color)';
-      case 'pending':
+      case 'new':
         return 'var(--warning-color)';
       case 'cancelled':
         return 'var(--error-color)';
@@ -471,7 +471,7 @@ const AdminDashboardPage: React.FC = () => {
                 <TableCell>
                   <StatusBadge status={order.status}>
                     {order.status === 'completed' && 'Выполнен'}
-                    {order.status === 'pending' && 'Ожидает'}
+                    {order.status === 'new' && 'Ожидает'}
                     {order.status === 'cancelled' && 'Отменен'}
                   </StatusBadge>
                 </TableCell>

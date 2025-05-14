@@ -29,6 +29,7 @@ const GlobalStyles = createGlobalStyle`
     --spacing-md: 16px;
     --spacing-lg: 24px;
     --spacing-xl: 32px;
+    --bottom-nav-height: 80px;  /* Высота нижней навигации */
   }
 
   * {
@@ -49,6 +50,8 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Добавляем отступ снизу для нижней навигации */
+    padding-bottom: calc(var(--bottom-nav-height) + 20px);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -124,6 +127,13 @@ const GlobalStyles = createGlobalStyle`
       border-color: var(--primary-color);
       box-shadow: 0 0 0 2px rgba(255, 159, 13, 0.2);
     }
+  }
+
+  /* Основной контент с учетом шапки и нижней навигации */
+  main {
+    min-height: calc(100vh - var(--bottom-nav-height) - 75px);
+    width: 100%;
+    padding-bottom: var(--bottom-nav-height);
   }
 
   /* Custom scrollbar */

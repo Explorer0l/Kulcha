@@ -441,7 +441,7 @@ const StatusBadge = styled.span<{ $status: string }>`
     switch (props.$status) {
       case 'completed':
         return 'var(--success-bg)';
-      case 'pending':
+      case 'new':
         return 'var(--warning-bg)';
       case 'cancelled':
         return 'var(--error-bg)';
@@ -453,7 +453,7 @@ const StatusBadge = styled.span<{ $status: string }>`
     switch (props.$status) {
       case 'completed':
         return 'var(--success-color)';
-      case 'pending':
+      case 'new':
         return 'var(--warning-color)';
       case 'cancelled':
         return 'var(--error-color)';
@@ -996,7 +996,7 @@ const OwnerStatisticsPage: React.FC = () => {
             
             // Фильтруем заказы по статусу
             const completed = extendedOrders.filter(order => order.status === 'completed');
-            const pending = extendedOrders.filter(order => order.status === 'pending');
+            const pending = extendedOrders.filter(order => order.status === 'new');
             console.log('Completed orders:', completed.length, 'Pending orders:', pending.length);
             setCompletedOrders(completed);
             setPendingOrders(pending);
@@ -1093,7 +1093,7 @@ const OwnerStatisticsPage: React.FC = () => {
           console.log('Extended orders with delivery method:', extendedOrders);
           setOrders(extendedOrders);
           setCompletedOrders(extendedOrders.filter(order => order.status === 'completed'));
-          setPendingOrders(extendedOrders.filter(order => order.status === 'pending'));
+          setPendingOrders(extendedOrders.filter(order => order.status === 'new'));
         } else {
           console.log('No orders found or empty array returned');
           setOrders([]);
@@ -1178,6 +1178,10 @@ const OwnerStatisticsPage: React.FC = () => {
     // Вызываем функцию после монтирования компонента и при изменении активного таба
     scrollToActiveTab();
   }, [activeTab]); // Добавляем activeTab в массив зависимостей
+
+  const isPending = (status: string): boolean => {
+    return status === 'new' || status === 'confirmed' || status === 'preparing' || status === 'ready';
+  };
 
   if (isLoading) {
     return (
@@ -1522,7 +1526,7 @@ const OwnerStatisticsPage: React.FC = () => {
                       <strong>#{order.id}</strong>
                       <StatusBadge $status={order.status}>
                         {order.status === 'completed' ? 'Выполнен' : 
-                         order.status === 'pending' ? 'В обработке' : 'Отменен'}
+                         order.status === 'new' ? 'В обработке' : 'Отменен'}
                       </StatusBadge>
                     </div>
                     <OrderDate>{formatDate(order.date)}</OrderDate>

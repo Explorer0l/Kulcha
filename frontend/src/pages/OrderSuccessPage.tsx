@@ -262,7 +262,7 @@ const OrderSuccessPage: React.FC = () => {
               customer: customerName,
               date: lastOrder.date,
               amount: lastOrder.totalAmount,
-              status: 'pending' // Начальный статус заказа
+              status: 'new' // Начальный статус заказа
             });
             
             if (adminOrder && adminOrder.id > 0) {
@@ -282,7 +282,7 @@ const OrderSuccessPage: React.FC = () => {
                 customer: customerName,
                 date: lastOrder.date,
                 amount: lastOrder.totalAmount,
-                status: 'pending'
+                status: 'new'
               });
               console.log('Retry: Order synchronized with admin panel, ID:', retryOrder?.id);
             } catch (retryError) {
@@ -322,7 +322,7 @@ const OrderSuccessPage: React.FC = () => {
   const getStatusLabel = (status: string) => {
     try {
       switch (status) {
-        case 'pending':
+        case 'new':
           return 'Ожидает подтверждения';
         case 'confirmed':
           return 'Подтвержден';

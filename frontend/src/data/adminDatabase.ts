@@ -48,7 +48,7 @@ export interface Order {
   totalAmount: number;
   deliveryMethod: DeliveryMethod;
   date: string;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'rejected';
+  status: 'new' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'rejected';
   restaurantId: number;
   userAddress?: UserAddress;
 }
